@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Buscador de comics y superheroes de Marvel">
+  <meta property="og:title" content="Ada Comics" />
+  <meta property="og:site-name" content="Ada Comics" />
+  <meta property="og:description" content="Buscador de comics y superheroes de Marvel">
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="CSS/style.css" />
+  <link rel="shortcut icon" href="images/icon.png" type="images/png" />
+  <title>Ada Comics by Ji</title>
+</head>
+
+<body>
+  <!-- Hero -->
+  <div id="hero">
+    <div id="hero--background">
+      <figure><img src="images/herov2.jpg" alt="superheroes" id="hero--img"></figure>
+      <h1 id="hero--title">ADA COMICS</h1>
+    </div>
+  </div>
+  <main id="main--container">
+    <!-- Search menu-->
+    <div id="search--menu">
+      <div id="input--panel">
+        <h2 id="search--title">Búsqueda</h2>
+        <div id="search--container">
+          <i class="fa-solid fa-magnifying-glass" id="search--icon"></i>
+          <input type="text" name="input--search" id="input--search" placeholder="Ingresá tu búsqueda" />
+        </div>
+      </div>
+      <div id="search--panel">
+        <div class="" id="filter--container">
+          <div>
+            <label for="input--type" id="label--type">TIPO</label>
+            <select name="input--type" id="search--type">
+              <option value="comics">COMICS</option>
+              <option value="characters">PERSONAJES</option>
+            </select>
+          </div>
+          <div>
+            <label for="search--sort" id="label--sort">ORDEN</label>
+            <select name="search--sort" id="search--sort">
+              <option value="name" class="hidden" id="sort--character-atoz">A-Z</option>
+              <option value="-name" class="hidden" id="sort--character-ztoa">Z-A</option>
+              <option value="title" id="sort--title-atoz">A-Z</option>
+              <option value="-title" id="sort--title-ztoa">Z-A</option>
+              <option value="focDate" id="sort--title-new">Más nuevos</option>
+              <option value="-focDate" id="sort--title-old">Más viejos</option>
+            </select>
+          </div>
+        </div>
+        <div id="btn--container">
+          <button id="btn--search">BUSCAR</button>
+        </div>
+      </div>
+    </div>
+    <div id="results--container">
+      <h3 id="results--title">Resultados</h3>
+      <h4 id="results--cuantiti">RESULTADOS</h4>
+    </div>
+
+    <!-- Cards -->
+    <section id="card--container">
+
+    </section>
+    <!-- Pagination -->
+    <section id="pagination--container">
+      <div id="btn--panel">
+        <button id="btn--first-page"><i class="fa-solid fa-backward-fast"></i></button>
+        <button id="btn--prev-page"><i class="fa-solid fa-backward"></i></button>
+        <button id="btn--next-page"><i class="fa-solid fa-forward"></i></button>
+        <button id="btn--last-page"><i class="fa-solid fa-forward-fast"></i></button>
+      </div>
+      <div id="page--navigation">
+        <p id="current--page">PÁGINA ACTUAL</p>
+        <p id="total--pages">PÁGINAS TOTALES</p>
+        <div>
+          <input type="number" id="page--input" placeholder="Página nro."/>
+          <button id="btn--gotopage">Ir a la página</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- Footer -->
+  <footer>
+    <p id="footer--text">&copy; 2024 - BY JIMENA TALEB</p>
+    <img src="images/footer.png" alt="escudo" id="footer--img">
+  </footer>
+  <script src="https://kit.fontawesome.com/48ddeb67c9.js" crossorigin="anonymous"></script>
+  <script src="JS/app.js"></script>
+</body>
+
+</html>

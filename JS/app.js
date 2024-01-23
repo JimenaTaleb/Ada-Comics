@@ -17,13 +17,13 @@ const publicKey = "&apikey=50ff4b6413283116c5c77b0bf9a1e88d"
 //Hash md5
 const hash = "&hash=adf5b63cea12d70814987f448a7b08e5" 
 
-let resorurce = "comics" || "characters";
+let resource = "comics" || "characters";
 let limit = 20;
 let title = "";
 let characterName = "";
 let offset = 0;
 const resultsPerPage = 20;
-let currentPage = 1;
+let currentPage = offset + 1;
 let totalPages = 1;
 
 
@@ -42,7 +42,7 @@ const showElement = (selectors) => {
   };  
 
 //Llamado a la api
-const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam, renderFunction) => {
+const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
     let urlApi = `${baseURL}`;
 
     if (resourceSearch === "comics") {
@@ -83,89 +83,77 @@ const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, 
     console.log(urlApi);
     const data = await response.json();
 
-    if (renderFunction) {
-        renderFunction(data.data.results);
-      }
-
-      currentPage = Math.ceil((offsetParam + 1) / resultsPerPage);
-      totalPages = Math.ceil(data.data.total / resultsPerPage);  
+    totalPages = Math.ceil(data.data.total / resultsPerPage);  
 
       
     console.log(data);
     return data
 };
 
-//Render
-const renderCharacterCard = (result) => {
-    const imageUrl = `${result.thumbnail.path}.${result.thumbnail.extension}`;
-    const cardContainer = document.createElement("div");
-    
-    cardContainer.classList.add(result.hasOwnProperty("title") ? "comic-card" : "character-card");
-
-    const imageElement = document.createElement("img");
-    imageElement.alt = result.title || result.name;
-    imageElement.src = imageUrl;
-
-    const titleElement = document.createElement("h2");
-    titleElement.textContent = result.title || result.name;
-
-    cardContainer.appendChild(imageElement);
-    cardContainer.appendChild(titleElement);
-
-    return cardContainer;
-};
-
-
-//Render con get
-const renderFunction = (results) => {
-    const cardContainer = $("#card--container");
-    cardContainer.innerHTML = "";
-  
-    for (let result of results) {
-      const characterCard = renderCharacterCard(result);
-      cardContainer.appendChild(characterCard);
+// Render results
+const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
+  const results = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
+  $("#card--container").innerHTML = "";
+  for (const result of results.data.results) {
+    if (resourceSearch === "comics") {
+      const imageUrl = `${result.thumbnail.path}.${result.thumbnail.extension}`;
+      $("#card--container").innerHTML += `
+        <div class="comic-card">
+          <img src="${imageUrl}">
+          <h2>${result.title}</h2>
+        </div>
+      `;
+    } else if (resourceSearch === "characters") {
+      const imageUrl = `${result.thumbnail.path}.${result.thumbnail.extension}`;
+      $("#card--container").innerHTML += `
+        <div class="character-card">
+          <img src="${imageUrl}">
+          <h2>${result.name}</h2>
+        </div>
+      `;
     }
-  };
-
-//Total de resultados  
-const getTotalResults = async (resourceSearch, inputSearch, orderSearch) => {
-    const maxLimit = 100;
-    const offsetParam = 0;
-  
-    const data = await getDataApi(resourceSearch, inputSearch, orderSearch, maxLimit, offsetParam);
-    const totalResults = data.data.total;
-  
-    return totalResults;
-  };
-
-//Render resultados  
-const renderTotalResults = async (resourceSearch, inputSearch, orderSearch) => {
-    const totalResults = await getTotalResults(resourceSearch, inputSearch, orderSearch);
-  
-    const resultsQuantity = $("#results--cuantiti");
-    resultsQuantity.textContent = `RESULTADOS: ${totalResults}`;
-  };  
-
-
-
-// ...
-
-// Ir a la siguiente pagina
-const loadMoreResults = async () => {
-  if (currentPage < totalPages) {
-      offset++
-      await getDataApi(resorurce, title, characterName, limit, offset, renderFunction);
   }
 };
+
+
+//Total de resultados  
+// const getTotalResults = async (resourceSearch, inputSearch, orderSearch) => {
+//     const maxLimit = 100;
+//     const offsetParam = 0;
+  
+//     const data = await getDataApi(resourceSearch, inputSearch, orderSearch, maxLimit, offsetParam);
+//     const totalResults = data.data.total;
+  
+//     return totalResults;
+//   };
+
+//Render resultados  
+// const renderTotalResults = async (resourceSearch, inputSearch, orderSearch) => {
+//     const totalResults = await getTotalResults(resourceSearch, inputSearch, orderSearch);
+  
+//     const resultsQuantity = $("#results--cuantiti");
+//     resultsQuantity.textContent = `RESULTADOS: ${totalResults}`;
+//   };  
+
+
+// Ir a la siguiente pagina
+// const loadMoreResults = async () => {
+//   if (currentPage < totalPages) {
+//       offset++
+//       await getDataApi(resource, title, characterName, limit, offset, renderFunction);
+//       console.log(offset)
+//   }
+// };
 
 
 // Ir a la pagina anterior
-const loadLessResults = async () => {
-  if (currentPage >= 1) {
-      offset--
-      await getDataApi(resorurce, title, characterName, limit, offset, renderFunction);
-  }
-};
+// const loadLessResults = async () => {
+//   if (currentPage >= 1) {
+//       offset--
+//       await getDataApi(resource, title, characterName, limit, offset, renderFunction);
+//       console.log(offset)
+//   }
+// };
 
   
 
@@ -175,8 +163,8 @@ const loadLessResults = async () => {
 
 //Initialize
 document.addEventListener("DOMContentLoaded", async () => {
-    await getDataApi("comics", "", "A-Z", 20, 0, renderFunction);
-    await renderTotalResults("comics", "", "A-Z");
+    await getDataApi("comics", "", "A-Z", 20, 0);
+    await renderApiResults("comics", "", "A-Z",  20, 0);
 
 //Mostrar
 $("#search--type").addEventListener("change", () =>{
@@ -185,15 +173,15 @@ $("#search--type").addEventListener("change", () =>{
 })
 
 // Evento buscar
-$("#btn--search").addEventListener("click", async () => {
-    const searchTerm = $("#input--search").value;
-    const typeSelected = $("#search--type").value;
-    const searchSort = $("#search--sort").value;
+// $("#btn--search").addEventListener("click", async () => {
+//     const searchTerm = $("#input--search").value;
+//     const typeSelected = $("#search--type").value;
+//     const searchSort = $("#search--sort").value;
   
 
-    await getDataApi(typeSelected, searchTerm, searchSort, 20, 0, renderFunction);
-    await renderTotalResults(typeSelected, searchTerm, searchSort);
-  });
+//     await getDataApi(typeSelected, searchTerm, searchSort, 20, 0, renderFunction);
+//     await renderTotalResults(typeSelected, searchTerm, searchSort);
+//   });
   
 
   $("#btn--prev-page").addEventListener("click", loadLessResults);

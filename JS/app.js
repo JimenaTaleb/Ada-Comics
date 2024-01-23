@@ -193,6 +193,7 @@ $("#search--type").addEventListener("change", () =>{
         showElement(["#sort--character-atoz", "#sort--character-ztoa"])
 })
 
+//Search
 $("#btn--search").addEventListener("click", async () => {
   const typeSelected = $("#search--type").value;
   const searchTerm = $("#input--search").value;

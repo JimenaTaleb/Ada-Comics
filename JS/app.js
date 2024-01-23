@@ -56,11 +56,11 @@ const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, 
             console.log(urlApi);
         }
 
-        if (orderSearch.toLowerCase() === "title") {
+        if (orderSearch.toLowerCase() === "a-z") {
           console.log("Orden A-Z para comics");
           urlApi += `orderBy=title&`;
           console.log(urlApi);
-      } else if (orderSearch.toLowerCase() === "-title") {
+      } else if (orderSearch.toLowerCase() === "z-a") {
           console.log("Orden Z-A para comics");
           urlApi += `orderBy=-title&`;
           console.log(urlApi);
@@ -87,9 +87,9 @@ const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, 
             urlApi += `characters?`;
         }
 
-        if (orderSearch === "name") {
+        if (orderSearch === "a-z") {
             urlApi += `&orderBy=name&`;
-        } else if (orderSearch === "-name") {
+        } else if (orderSearch === "z-a") {
             urlApi += `&orderBy=-name&`;
         }
 
@@ -155,23 +155,10 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
 
 
 // Ir a la siguiente pagina
-// const loadMoreResults = async () => {
-//   if (currentPage < totalPages) {
-//       offset++
-//       await getDataApi(resource, title, characterName, limit, offset, renderFunction);
-//       console.log(offset)
-//   }
-// };
 
 
 // Ir a la pagina anterior
-// const loadLessResults = async () => {
-//   if (currentPage >= 1) {
-//       offset--
-//       await getDataApi(resource, title, characterName, limit, offset, renderFunction);
-//       console.log(offset)
-//   }
-// };
+
 
   
 
@@ -181,23 +168,20 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
 
 //Initialize
 document.addEventListener("DOMContentLoaded", async () => {
-    await getDataApi("comics", "", "title", 20, 0);
-    await renderApiResults("comics", "", "title",  20, 0);
+    // await getDataApi("comics", "", "title", 20, 0);
+    await renderApiResults("comics", "", "a-z",  20, 0);
 
-//Hide options
-$("#search--type").addEventListener("change", () =>{
-  if($("#search--type").value === "comics"){
-    hideElement(["#sort--character-atoz", "#sort--character-ztoa"])
-  } else if($("#search--type").value === "characters")
-        hideElement(["#sort--title-atoz", "#sort--title-ztoa", "#sort--title-new", "#sort--title-old"])
-        showElement(["#sort--character-atoz", "#sort--character-ztoa"])
 })
+
 
 //Search
 $("#btn--search").addEventListener("click", async () => {
   const typeSelected = $("#search--type").value;
   const searchTerm = $("#input--search").value;
   const searchSort = $("#search--sort").value;
+  console.log(typeSelected);
+  console.log(searchTerm);
+  console.log(searchSort);
 
 
   await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
@@ -205,15 +189,39 @@ $("#btn--search").addEventListener("click", async () => {
  
 })
 
+//Btn next page
+$("#btn--next-page").addEventListener("click", async () => {
+  if (currentPage <= 1) {
+    offset++
+    console.log(offset);
+  }
+
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+  console.log((searchSort));
   
-})
+  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
+});
 
 
+// Btn prev page
+$("#btn--prev-page").addEventListener("click", async () => {
+  if (currentPage >= 1) {
+    offset--
+    console.log(offset);
+  }
 
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+  console.log((searchSort));
   
+  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
+});
 
-  // $("#btn--prev-page").addEventListener("click", loadLessResults);
-  // $("#btn--next-page").addEventListener("click", loadMoreResults);
 
 
 
@@ -247,11 +255,6 @@ $("#btn--search").addEventListener("click", async () => {
 // const buildingSearchParams = () => {
 
 // };
-
-
-
-
-
 
 
 

@@ -23,7 +23,7 @@ let title = "";
 let characterName = "";
 let offset = 0;
 const resultsPerPage = 20;
-let currentPage = ""
+let currentPage = 1
 let totalPages = 1;
 
 
@@ -228,8 +228,9 @@ $("#btn--prev-page").addEventListener("click", async () => {
   console.log((searchSort));
   
   await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
   await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset)
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
+  
 });
 
 //Btn go to first page
@@ -245,6 +246,24 @@ $("#btn--first-page").addEventListener("click", async () => {
   await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
 
 });
+
+// Btn go to last page
+$("#btn--last-page").addEventListener("click", async () => {
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+
+  const data = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+  const lastPage = data.totalPages;
+  offset = lastPage - 1;
+
+  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+});
+
+
+
 
 
 

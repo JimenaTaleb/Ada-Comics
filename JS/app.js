@@ -23,7 +23,7 @@ let title = "";
 let characterName = "";
 let offset = 0;
 const resultsPerPage = 20;
-let currentPage = offset + 1;
+let currentPage = ""
 let totalPages = 1;
 
 
@@ -103,7 +103,7 @@ const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, 
     console.log(urlApi);
     const data = await response.json();
 
-    totalPages = Math.ceil(data.data.total / resultsPerPage);  
+     
 
       
     console.log(data);
@@ -141,18 +141,23 @@ const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitPa
   
     const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
     const totalResults = data.data.total;
+    const totalPages = Math.ceil(data.data.total / resultsPerPage); 
+    const currentPage = offsetParam + 1
+    
+    
   
-    return totalResults;
+    return {totalResults, totalPages, currentPage}
   };
 
 //Render resultados  
 const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
-    const totalResults = await getTotalResults(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
+    const pagination = await getTotalResults(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
   
-    const resultsQuantity = $("#results--cuantiti");
-    resultsQuantity.textContent = `RESULTADOS: ${totalResults}`;
-  };  
-
+    $("#results--cuantiti").textContent = `RESULTADOS: ${pagination.totalResults}`;
+    $("#current--page").textContent = `PÁGINA ACTUAL: ${pagination.currentPage}`;
+    $("#total--pages").textContent = `PÁGINAS TOTALES: ${pagination.totalPages}`;
+  };
+  
 
 // Ir a la siguiente pagina
 
@@ -177,6 +182,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 //Search
 $("#btn--search").addEventListener("click", async () => {
+  offset = 0
   const typeSelected = $("#search--type").value;
   const searchTerm = $("#input--search").value;
   const searchSort = $("#search--sort").value;
@@ -205,6 +211,7 @@ $("#btn--next-page").addEventListener("click", async () => {
   
   await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
   await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
+  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset)
 });
 
 
@@ -222,6 +229,21 @@ $("#btn--prev-page").addEventListener("click", async () => {
   
   await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
   await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
+  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset)
+});
+
+//Btn go to first page
+$("#btn--first-page").addEventListener("click", async () => {
+  offset = 0;
+
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+
+  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+
 });
 
 

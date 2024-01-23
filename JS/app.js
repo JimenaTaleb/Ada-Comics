@@ -137,21 +137,21 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
 
 
 //Total de resultados  
-// const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
+const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   
-//     const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
-//     const totalResults = data.data.total;
+    const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
+    const totalResults = data.data.total;
   
-//     return totalResults;
-//   };
+    return totalResults;
+  };
 
 //Render resultados  
-// const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
-//     const totalResults = await getTotalResults(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
+const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
+    const totalResults = await getTotalResults(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
   
-//     const resultsQuantity = $("#results--cuantiti");
-//     resultsQuantity.textContent = `RESULTADOS: ${totalResults}`;
-//   };  
+    const resultsQuantity = $("#results--cuantiti");
+    resultsQuantity.textContent = `RESULTADOS: ${totalResults}`;
+  };  
 
 
 // Ir a la siguiente pagina
@@ -170,6 +170,7 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
 document.addEventListener("DOMContentLoaded", async () => {
     // await getDataApi("comics", "", "title", 20, 0);
     await renderApiResults("comics", "", "a-z",  20, 0);
+    await renderTotalResults("comics", "", "a-z",  20, 0)
 
 })
 
@@ -186,6 +187,7 @@ $("#btn--search").addEventListener("click", async () => {
 
   await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
   await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
+  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset)
  
 })
 

@@ -43,24 +43,41 @@ const showElement = (selectors) => {
 
 //Llamado a la api
 const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
+  console.log("orderSearch:", orderSearch);
+
     let urlApi = `${baseURL}`;
 
     if (resourceSearch === "comics") {
         if (inputSearch) {
             urlApi += `comics?titleStartsWith=${inputSearch}&`;
+            console.log(urlApi);
         } else {
             urlApi += `comics?`;
+            console.log(urlApi);
         }
 
-        if (orderSearch === "A-Z") {
-            urlApi += `orderBy=title&`;
-        } else if (orderSearch === "Z-A") {
-            urlApi += `orderBy=-title&`;
-        } else if (orderSearch === "Más nuevos") {
-            urlApi += `orderBy=-focDate&`;
-        } else if (orderSearch === "Más viejos") {
-            urlApi += `orderBy=focDate&`;
-        }
+        if (orderSearch.toLowerCase() === "title") {
+          console.log("Orden A-Z para comics");
+          urlApi += `orderBy=title&`;
+          console.log(urlApi);
+      } else if (orderSearch.toLowerCase() === "-title") {
+          console.log("Orden Z-A para comics");
+          urlApi += `orderBy=-title&`;
+          console.log(urlApi);
+      } else if (orderSearch === "-focDate") {
+          console.log("Orden Más Nuevos para comics");
+          urlApi += `orderBy=-focDate&`;
+          console.log(urlApi);
+      } else if (orderSearch === "focDate") {
+          console.log("Orden Más Viejos para comics");
+          urlApi += `orderBy=focDate&`;
+          console.log(urlApi);
+      }
+
+
+
+        console.log(`el orden es para comics: ${orderSearch}`);
+        console.log(urlApi);
 
         urlApi += `offset=${offsetParam}&limit=${limitParam}&${ts}${publicKey}&${hash}`;
     } else if (resourceSearch === "characters") {
@@ -70,11 +87,14 @@ const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, 
             urlApi += `characters?`;
         }
 
-        if (orderSearch === "A-Z") {
+        if (orderSearch === "name") {
             urlApi += `&orderBy=name&`;
-        } else if (orderSearch === "Z-A") {
+        } else if (orderSearch === "-name") {
             urlApi += `&orderBy=-name&`;
         }
+
+        console.log(`el orden es para personajes: ${orderSearch}`);
+        console.log(urlApi);
 
         urlApi += `&offset=${offsetParam}&limit=${limitParam}&${ts}${publicKey}&${hash}`;
     }
@@ -117,19 +137,17 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
 
 
 //Total de resultados  
-// const getTotalResults = async (resourceSearch, inputSearch, orderSearch) => {
-//     const maxLimit = 100;
-//     const offsetParam = 0;
+// const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   
-//     const data = await getDataApi(resourceSearch, inputSearch, orderSearch, maxLimit, offsetParam);
+//     const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
 //     const totalResults = data.data.total;
   
 //     return totalResults;
 //   };
 
 //Render resultados  
-// const renderTotalResults = async (resourceSearch, inputSearch, orderSearch) => {
-//     const totalResults = await getTotalResults(resourceSearch, inputSearch, orderSearch);
+// const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
+//     const totalResults = await getTotalResults(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
   
 //     const resultsQuantity = $("#results--cuantiti");
 //     resultsQuantity.textContent = `RESULTADOS: ${totalResults}`;
@@ -163,31 +181,39 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
 
 //Initialize
 document.addEventListener("DOMContentLoaded", async () => {
-    await getDataApi("comics", "", "A-Z", 20, 0);
-    await renderApiResults("comics", "", "A-Z",  20, 0);
+    await getDataApi("comics", "", "title", 20, 0);
+    await renderApiResults("comics", "", "title",  20, 0);
 
 //Mostrar
-$("#search--type").addEventListener("change", () =>{
-        hideElement(["#sort--title-atoz", "#sort--title-ztoa", "#sort--title-new", "#sort--title-old"])
-        showElement(["#sort--character-atoz", "#sort--character-ztoa"])
+// $("#search--type").addEventListener("change", () =>{
+//   if($("#search--type").value === "comics"){
+//     hideElement(["#sort--character-atoz", "#sort--character-ztoa"])
+//   } else if($("#search--type").value === "characters")
+//         hideElement(["#sort--title-atoz", "#sort--title-ztoa", "#sort--title-new", "#sort--title-old"])
+//         showElement(["#sort--character-atoz", "#sort--character-ztoa"])
+// })
+
+$("#btn--search").addEventListener("click", async () => {
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+
+
+  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
+ 
 })
 
-// Evento buscar
-// $("#btn--search").addEventListener("click", async () => {
-//     const searchTerm = $("#input--search").value;
-//     const typeSelected = $("#search--type").value;
-//     const searchSort = $("#search--sort").value;
+  
+})
+
+
+
   
 
-//     await getDataApi(typeSelected, searchTerm, searchSort, 20, 0, renderFunction);
-//     await renderTotalResults(typeSelected, searchTerm, searchSort);
-//   });
-  
+  // $("#btn--prev-page").addEventListener("click", loadLessResults);
+  // $("#btn--next-page").addEventListener("click", loadMoreResults);
 
-  $("#btn--prev-page").addEventListener("click", loadLessResults);
-  $("#btn--next-page").addEventListener("click", loadMoreResults);
-
-}); 
 
 
 

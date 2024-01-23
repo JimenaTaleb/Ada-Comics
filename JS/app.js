@@ -264,6 +264,31 @@ $("#btn--last-page").addEventListener("click", async () => {
 
 
 
+// Btn go to selected page
+$("#btn--gotopage").addEventListener("click", async () => {
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+
+  const selectedPage = $("#page--input").valueAsNumber;
+
+  const { totalPages } = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+
+  if (selectedPage > 0 && selectedPage <= totalPages) {
+    offset = selectedPage - 1
+    await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+    await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+    await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+  } else {
+    alert("Número de página inválido");
+  }
+  $("#page--input").value = ""
+});
+
+
+
+
+
 
 
 

@@ -184,14 +184,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     await getDataApi("comics", "", "title", 20, 0);
     await renderApiResults("comics", "", "title",  20, 0);
 
-//Mostrar
-// $("#search--type").addEventListener("change", () =>{
-//   if($("#search--type").value === "comics"){
-//     hideElement(["#sort--character-atoz", "#sort--character-ztoa"])
-//   } else if($("#search--type").value === "characters")
-//         hideElement(["#sort--title-atoz", "#sort--title-ztoa", "#sort--title-new", "#sort--title-old"])
-//         showElement(["#sort--character-atoz", "#sort--character-ztoa"])
-// })
+//Hide options
+$("#search--type").addEventListener("change", () =>{
+  if($("#search--type").value === "comics"){
+    hideElement(["#sort--character-atoz", "#sort--character-ztoa"])
+  } else if($("#search--type").value === "characters")
+        hideElement(["#sort--title-atoz", "#sort--title-ztoa", "#sort--title-new", "#sort--title-old"])
+        showElement(["#sort--character-atoz", "#sort--character-ztoa"])
+})
 
 $("#btn--search").addEventListener("click", async () => {
   const typeSelected = $("#search--type").value;

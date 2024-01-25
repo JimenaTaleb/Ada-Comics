@@ -156,7 +156,7 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
 
 
 const showDetails = (type, imageUrl, title, releaseDate, writers, description, characters) => {
-  hideElement(["#card--container"]);
+  hideElement(["#card--container", "#results--container"]);
   showElement(["#card--details"]);
 
   $("#card--details").innerHTML = `

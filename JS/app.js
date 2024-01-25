@@ -277,14 +277,16 @@ $("#btn--last-page").addEventListener("click", async () => {
   const searchTerm = $("#input--search").value;
   const searchSort = $("#search--sort").value;
 
-  const data = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
-  const lastPage = data.totalPages;
-  offset = lastPage - 1;
+  const { totalPages } = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
 
-  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+  if (totalPages > 0) {
+    offset = (totalPages - 1) * resultsPerPage;
+    await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+    await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+    await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+  }
 });
+
 
 
 

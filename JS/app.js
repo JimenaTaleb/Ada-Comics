@@ -228,7 +228,7 @@ $("#btn--next-page").addEventListener("click", async () => {
     console.log(offset);
   } else if (currentPage > 1 &&  currentPage < totalPages){
     $("#btn--prev-page").removeAttribute("disabled", true)
-    currentPage++;
+    offset += 20
   } else {
     $("#btn--next-page").setAttribute("disabled", true)
   }

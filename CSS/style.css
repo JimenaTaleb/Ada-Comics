@@ -231,7 +231,8 @@
 #btn--prev-page,
 #btn--next-page,
 #btn--last-page,
-#btn--gotopage {
+#btn--gotopage,
+#btn--goBack {
     background-color: black;
     color: white;
     padding: 15px;
@@ -245,7 +246,8 @@
 #btn--prev-page:hover,
 #btn--next-page:hover,
 #btn--last-page:hover,
-#btn--gotopage:hover {
+#btn--gotopage:hover,
+#btn--goBack:hover {
     background-color: #520000;
 }
 

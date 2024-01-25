@@ -178,7 +178,7 @@ const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitPa
     const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
     const totalResults = data.data.total;
     const totalPages = Math.ceil(data.data.total / resultsPerPage); 
-    const currentPage = offsetParam + 1
+    const currentPage = (offsetParam / 20) + 1
 
     return {totalResults, totalPages, currentPage}
   };

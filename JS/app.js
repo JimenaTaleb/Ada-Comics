@@ -111,13 +111,14 @@ const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, 
     return data
 };
 
+// Render Api results
 const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   const results = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
   $("#card--container").innerHTML = "";
-  
+
   for (const result of results.data.results) {
     if (resourceSearch === "comics") {
-      const imageUrl = `${result.thumbnail.path}.${result.thumbnail.extension}`;
+      const imageUrlComic = `${result.thumbnail.path}.${result.thumbnail.extension}`;
       const id = result.id;
       const title = result.title;
       const releaseDate = result.dates.find(date => date.type === "onsaleDate").date;
@@ -129,47 +130,76 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
       comicCard.className = "comic-card";
       comicCard.id = id;
       comicCard.innerHTML = `
-        <img src="${imageUrl}">
+        <img src="${imageUrlComic}">
         <h2>${title}</h2>
       `;
 
       comicCard.addEventListener("click", () => {
-        showDetails("comics", imageUrl, title, releaseDate, writers.join(", "), description, characters.join(", "));
+        showComicDetails(imageUrlComic, title, releaseDate, writers.join(", "), description, characters.join(", "));
       });
 
       $("#card--container").appendChild(comicCard);
     } else if (resourceSearch === "characters") {
-      const imageUrl = `${result.thumbnail.path}.${result.thumbnail.extension}`;
+      const imageUrlCharacter = `${result.thumbnail.path}.${result.thumbnail.extension}`;
       const id = result.id;
       const name = result.name;
       const description = result.description;
 
-      $("#card--container").innerHTML += `
-        <div class="character-card" id="${id}" onclick="showDetails("characters", "${imageUrl}", "${name}", "${description}")">
-          <img src="${imageUrl}">
-          <h2>${name}</h2>
-        </div>
+      const characterCard = document.createElement("div");
+      characterCard.className = "character-card";
+      characterCard.id = id;
+      characterCard.innerHTML = `
+        <img src="${imageUrlCharacter}">
+        <h2>${name}</h2>
       `;
+
+      characterCard.addEventListener("click", () => {
+        showCharacterDetails(imageUrlCharacter, name, description);
+      });
+
+      $("#card--container").appendChild(characterCard);
     }
   }
 };
 
+// Format date
+const formatReleaseDate = (dateString) => {
+  const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+  const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
+  return formattedDate;
+};
 
-const showDetails = (type, imageUrl, title, releaseDate, writers, description, characters) => {
+// Función para mostrar detalles de cómic
+const showComicDetails = async (imageUrl, title, releaseDate, writers, description, characters) => {
   hideElement(["#card--container", "#results--container"]);
   showElement(["#card--details"]);
+
+  const formattedReleaseDate = formatReleaseDate(releaseDate);
 
   $("#card--details").innerHTML = `
     <img src="${imageUrl}" alt="${title}">
     <h2>${title}</h2>
-    <p>Fecha de lanzamiento: ${releaseDate}</p>
-    ${type === "comics" ? `<p>Guionistas: ${writers}</p>` : ""}
-    <p>Descripción: ${description}</p>
-    ${type === "comics" ? `<p>Personajes incluidos: ${characters}</p>` : ""}
+    <p class="date">Fecha de lanzamiento: <span>${formattedReleaseDate}</span></p>
+    <p class="writers">Guionistas: <span>${writers || "Sin datos disponibles"}</span></p>
+    <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
+    <div id="characters-section"></div>
     <button id="btn--goBack" onclick="hideElement(["#card--details"]); showElement(["#card--container"])"> Volver </button>
   `;
 };
 
+// Función para mostrar detalles de personaje
+const showCharacterDetails = async (imageUrl, name, description) => {
+  hideElement(["#card--container", "#results--container"]);
+  showElement(["#card--details"]);
+
+  $("#card--details").innerHTML = `
+    <img src="${imageUrl}" alt="${name}">
+    <h2>${name}</h2>
+    <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
+    <div id="characters-section"></div>
+    <button id="btn--goBack" onclick="hideElement(["#card--details"]); showElement(["#card--container"])"> Volver </button>
+  `;
+};
 
 
 //Total de resultados  
@@ -210,8 +240,7 @@ const updateDisabledProperty = () => {
     $("#btn--last-page").disabled = true;
   }
 };
-  
-  
+
 
 //Initialize
 document.addEventListener("DOMContentLoaded", async () => {

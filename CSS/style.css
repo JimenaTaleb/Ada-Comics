@@ -248,6 +248,14 @@
     background-color: #520000;
 }
 
+#btn--first-page:disabled,
+#btn--prev-page:disabled,
+#btn--next-page:disabled,
+#btn--last-page:disabled,
+#btn--gotopage:disabled {
+    background-color: gray;
+}
+
 #btn--gotopage {
     padding: 6px;
 }

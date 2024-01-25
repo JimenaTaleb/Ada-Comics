@@ -175,7 +175,7 @@ const showDetails = (type, imageUrl, title, releaseDate, writers, description, c
 //Total de resultados  
 const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
-  totalPages = Math.ceil(data.data.total / resultsPerPage); // Modificación aquí
+  totalPages = Math.ceil(data.data.total / resultsPerPage);
   const currentPage = Math.floor(offsetParam / resultsPerPage) + 1;
 
   return { totalResults: data.data.total, totalPages, currentPage };

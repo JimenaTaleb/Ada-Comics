@@ -174,14 +174,12 @@ const showDetails = (type, imageUrl, title, releaseDate, writers, description, c
 
 //Total de resultados  
 const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
-  
-    const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
-    const totalResults = data.data.total;
-    const totalPages = Math.ceil(data.data.total / resultsPerPage); 
-    const currentPage = (offsetParam / 20) + 1
+  const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
+  totalPages = Math.ceil(data.data.total / resultsPerPage); // Modificación aquí
+  const currentPage = Math.floor(offsetParam / resultsPerPage) + 1;
 
-    return {totalResults, totalPages, currentPage}
-  };
+  return { totalResults: data.data.total, totalPages, currentPage };
+};
 
 //Render resultados  
 const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
@@ -191,13 +189,35 @@ const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limi
     $("#current--page").textContent = `PÁGINA ACTUAL: ${pagination.currentPage}`;
     $("#total--pages").textContent = `PÁGINAS TOTALES: ${pagination.totalPages}`;
   };
+
+//Update disabled
+const updateDisabledProperty = () => {
+  const currentPage = Math.floor(offset / resultsPerPage) + 1;
+
+  if (offset > 0) {
+    $("#btn--prev-page").disabled = false;
+    $("#btn--first-page").disabled = false;
+  } else {
+    $("#btn--prev-page").disabled = true;
+    $("#btn--first-page").disabled = true;
+  }
+
+  if (offset < (totalPages - 1) * resultsPerPage) {
+    $("#btn--next-page").disabled = false;
+    $("#btn--last-page").disabled = false;
+  } else {
+    $("#btn--next-page").disabled = true;
+    $("#btn--last-page").disabled = true;
+  }
+};
+  
   
 
 //Initialize
 document.addEventListener("DOMContentLoaded", async () => {
     await renderApiResults("comics", "", "a-z",  20, 0);
     await renderTotalResults("comics", "", "a-z",  20, 0)
-
+    updateDisabledProperty()
 })
 
 
@@ -215,6 +235,7 @@ $("#btn--search").addEventListener("click", async () => {
   await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
   await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
   await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset)
+  
  
 })
 
@@ -225,13 +246,9 @@ $("#btn--next-page").addEventListener("click", async () => {
 
   if (currentPage <= 1) {
     offset += 20
+    updateDisabledProperty()
     console.log(offset);
-  } else if (currentPage > 1 &&  currentPage < totalPages){
-    $("#btn--prev-page").removeAttribute("disabled", true)
-    offset += 20
-  } else {
-    $("#btn--next-page").setAttribute("disabled", true)
-  }
+  } 
 
   const typeSelected = $("#search--type").value;
   const searchTerm = $("#input--search").value;
@@ -248,12 +265,9 @@ $("#btn--next-page").addEventListener("click", async () => {
 $("#btn--prev-page").addEventListener("click", async () => {
   if (currentPage > 1  && currentPage <= totalPages) {
     offset -= 20
-    $("#btn--next-page").removeAttribute("disabled", true)
+    updateDisabledProperty()
     console.log(offset);
-  } else {
-    $("#btn--next-page").setAttribute("disabled", true)
-    offset -= 20
-  }
+  } 
 
   const typeSelected = $("#search--type").value;
   const searchTerm = $("#input--search").value;
@@ -269,6 +283,7 @@ $("#btn--prev-page").addEventListener("click", async () => {
 //Btn go to first page
 $("#btn--first-page").addEventListener("click", async () => {
   offset = 0;
+  updateDisabledProperty()
 
   const typeSelected = $("#search--type").value;
   const searchTerm = $("#input--search").value;
@@ -290,6 +305,7 @@ $("#btn--last-page").addEventListener("click", async () => {
 
   if (totalPages > 0) {
     offset = (totalPages - 1) * resultsPerPage;
+    updateDisabledProperty()
     await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
     await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
     await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
@@ -319,6 +335,9 @@ $("#btn--gotopage").addEventListener("click", async () => {
   }
   $("#page--input").value = ""
 });
+
+
+
 
 
 //API FETCH

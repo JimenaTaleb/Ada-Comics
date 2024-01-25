@@ -226,6 +226,11 @@ $("#btn--next-page").addEventListener("click", async () => {
   if (currentPage <= 1) {
     offset += 20
     console.log(offset);
+  } else if (currentPage > 1 &&  currentPage < totalPages){
+    $("#btn--prev-page").removeAttribute("disabled", true)
+    currentPage++;
+  } else {
+    $("#btn--next-page").setAttribute("disabled", true)
   }
 
   const typeSelected = $("#search--type").value;
@@ -241,9 +246,13 @@ $("#btn--next-page").addEventListener("click", async () => {
 
 // Btn prev page
 $("#btn--prev-page").addEventListener("click", async () => {
-  if (currentPage >= 1) {
+  if (currentPage > 1  && currentPage <= totalPages) {
     offset -= 20
+    $("#btn--next-page").removeAttribute("disabled", true)
     console.log(offset);
+  } else {
+    $("#btn--next-page").setAttribute("disabled", true)
+    offset -= 20
   }
 
   const typeSelected = $("#search--type").value;

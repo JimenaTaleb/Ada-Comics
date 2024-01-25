@@ -29,17 +29,23 @@ let totalPages = 1;
 
 //Ocultar elementos
 const hideElement = (selectors) => {
-    for (const selector of selectors) {
-      $(selector).classList.add("hidden");
+  for (const selector of selectors) {
+    const element = $(selector);
+    if (element) {
+      element.style.display = "none";
     }
-  };
+  }
+};
 
 //Mostrar elementos
 const showElement = (selectors) => {
-    for (const selector of selectors) {
-      $(selector).classList.remove("hidden");
+  for (const selector of selectors) {
+    const element = $(selector);
+    if (element) {
+      element.style.display = "block";
     }
-  };  
+  }
+};
 
 //Llamado a la api
 const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
@@ -74,8 +80,6 @@ const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, 
           console.log(urlApi);
       }
 
-
-
         console.log(`el orden es para comics: ${orderSearch}`);
         console.log(urlApi);
 
@@ -103,37 +107,69 @@ const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, 
     console.log(urlApi);
     const data = await response.json();
 
-     
-
-      
     console.log(data);
     return data
 };
 
-// Render results
 const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   const results = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
   $("#card--container").innerHTML = "";
+  
   for (const result of results.data.results) {
     if (resourceSearch === "comics") {
       const imageUrl = `${result.thumbnail.path}.${result.thumbnail.extension}`;
-      $("#card--container").innerHTML += `
-        <div class="comic-card">
-          <img src="${imageUrl}">
-          <h2>${result.title}</h2>
-        </div>
+      const id = result.id;
+      const title = result.title;
+      const releaseDate = result.dates.find(date => date.type === "onsaleDate").date;
+      const writers = result.creators.items.filter(creator => creator.role === "writer").map(writer => writer.name);
+      const description = result.description;
+      const characters = result.characters.items.map(character => character.name);
+
+      const comicCard = document.createElement("div");
+      comicCard.className = "comic-card";
+      comicCard.id = id;
+      comicCard.innerHTML = `
+        <img src="${imageUrl}">
+        <h2>${title}</h2>
       `;
+
+      comicCard.addEventListener("click", () => {
+        showDetails("comics", imageUrl, title, releaseDate, writers.join(", "), description, characters.join(", "));
+      });
+
+      $("#card--container").appendChild(comicCard);
     } else if (resourceSearch === "characters") {
       const imageUrl = `${result.thumbnail.path}.${result.thumbnail.extension}`;
+      const id = result.id;
+      const name = result.name;
+      const description = result.description;
+
       $("#card--container").innerHTML += `
-        <div class="character-card">
+        <div class="character-card" id="${id}" onclick="showDetails("characters", "${imageUrl}", "${name}", "${description}")">
           <img src="${imageUrl}">
-          <h2>${result.name}</h2>
+          <h2>${name}</h2>
         </div>
       `;
     }
   }
 };
+
+
+const showDetails = (type, imageUrl, title, releaseDate, writers, description, characters) => {
+  hideElement(["#card--container"]);
+  showElement(["#card--details"]);
+
+  $("#card--details").innerHTML = `
+    <img src="${imageUrl}" alt="${title}">
+    <h2>${title}</h2>
+    <p>Fecha de lanzamiento: ${releaseDate}</p>
+    ${type === "comics" ? `<p>Guionistas: ${writers}</p>` : ""}
+    <p>Descripción: ${description}</p>
+    ${type === "comics" ? `<p>Personajes incluidos: ${characters}</p>` : ""}
+    <button id="btn--goBack" onclick="hideElement(["#card--details"]); showElement(["#card--container"])"> Volver </button>
+  `;
+};
+
 
 
 //Total de resultados  
@@ -143,9 +179,7 @@ const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitPa
     const totalResults = data.data.total;
     const totalPages = Math.ceil(data.data.total / resultsPerPage); 
     const currentPage = offsetParam + 1
-    
-    
-  
+
     return {totalResults, totalPages, currentPage}
   };
 
@@ -159,21 +193,8 @@ const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limi
   };
   
 
-// Ir a la siguiente pagina
-
-
-// Ir a la pagina anterior
-
-
-  
-
-
-
-
-
 //Initialize
 document.addEventListener("DOMContentLoaded", async () => {
-    // await getDataApi("comics", "", "title", 20, 0);
     await renderApiResults("comics", "", "a-z",  20, 0);
     await renderTotalResults("comics", "", "a-z",  20, 0)
 
@@ -199,8 +220,11 @@ $("#btn--search").addEventListener("click", async () => {
 
 //Btn next page
 $("#btn--next-page").addEventListener("click", async () => {
+
+  $("#card--container").innerHTML = "";
+
   if (currentPage <= 1) {
-    offset++
+    offset += 20
     console.log(offset);
   }
 
@@ -218,7 +242,7 @@ $("#btn--next-page").addEventListener("click", async () => {
 // Btn prev page
 $("#btn--prev-page").addEventListener("click", async () => {
   if (currentPage >= 1) {
-    offset--
+    offset -= 20
     console.log(offset);
   }
 
@@ -284,22 +308,6 @@ $("#btn--gotopage").addEventListener("click", async () => {
   }
   $("#page--input").value = ""
 });
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  
-
 
 
 //API FETCH

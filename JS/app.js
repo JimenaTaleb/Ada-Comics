@@ -182,7 +182,7 @@ const showComicDetails = async (imageUrl, title, releaseDate, writers, descripti
     <p class="writers">Guionistas: <span>${writers || "Sin datos disponibles"}</span></p>
     <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
     <div id="characters-section"></div>
-    <button id="btn--goBack" onclick="hideElement(["#card--details"]); showElement(["#card--container"])"> Volver </button>
+    <button id="btn--goBack" onclick="hideElement(['#card--details']); showElement(['#card--container'])"> Volver </button>
   `;
 };
 
@@ -196,7 +196,7 @@ const showCharacterDetails = async (imageUrl, name, description) => {
     <h2>${name}</h2>
     <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
     <div id="characters-section"></div>
-    <button id="btn--goBack" onclick="hideElement(["#card--details"]); showElement(["#card--container"])"> Volver </button>
+    <button id="btn--goBack" onclick="hideElement(['#card--details']); showElement(['#card--container'])"> Volver </button>
   `;
 };
 

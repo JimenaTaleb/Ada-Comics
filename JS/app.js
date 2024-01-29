@@ -144,7 +144,6 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
       const id = result.id;
       const name = result.name;
       const description = result.description;
-
       const characterCard = document.createElement("div");
       characterCard.className = "character-card";
       characterCard.id = id;
@@ -170,7 +169,7 @@ const formatReleaseDate = (dateString) => {
 };
 
 // Función para mostrar detalles de cómic
-const showComicDetails = async (imageUrl, title, releaseDate, writers, description, characters) => {
+const showComicDetails = async (imageUrl, title, releaseDate, writers, description) => {
   hideElement(["#card--container", "#results--container"]);
   showElement(["#card--details"]);
 
@@ -355,15 +354,16 @@ $("#btn--gotopage").addEventListener("click", async () => {
   const { totalPages } = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
 
   if (selectedPage > 0 && selectedPage <= totalPages) {
-    offset = selectedPage - 1
+    offset = (selectedPage - 1) * resultsPerPage;  // Corrección aquí
     await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
     await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
     await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
   } else {
     alert("Número de página inválido");
   }
-  $("#page--input").value = ""
+  $("#page--input").value = "";
 });
+
 
 
 

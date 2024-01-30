@@ -5,7 +5,7 @@ const $ = (selector) => document.querySelector(selector);
 const baseURL = "https://gateway.marvel.com/v1/public/"
 let ts = "ts=1"
 const publicKey = "&apikey=50ff4b6413283116c5c77b0bf9a1e88d"
-const hash = "&hash=adf5b63cea12d70814987f448a7b08e5" 
+const hash = "&hash=adf5b63cea12d70814987f448a7b08e5"
 
 let resource = "comics" || "characters";
 let limit = 20;
@@ -22,7 +22,7 @@ const hideElement = (selectors) => {
   selectors.forEach((selector) => {
     const element = $(selector);
     if (element) {
-      element.style.display = "none";
+      element.classList.add("hidden");
     }
   });
 };
@@ -32,9 +32,16 @@ const showElement = (selectors) => {
   selectors.forEach((selector) => {
     const element = $(selector);
     if (element) {
-      element.style.display = "block";
+      element.classList.remove("hidden");
     }
   });
+};
+
+//Format date
+const formatReleaseDate = (dateString) => {
+  const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+  const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
+  return formattedDate;
 };
 
 //URL construction
@@ -42,26 +49,26 @@ const buildApiUrl = (resource, inputSearch, orderSearch, offsetParam, limitParam
   let url = `${baseURL}${resource}?`;
 
   if (inputSearch) {
-      url += `${resource === 'comics' ? 'titleStartsWith' : 'nameStartsWith'}=${inputSearch}&`;
+    url += `${resource === 'comics' ? 'titleStartsWith' : 'nameStartsWith'}=${inputSearch}&`;
   }
 
   switch (orderSearch.toLowerCase()) {
-      case "a-z":
-          url += `orderBy=${resource === 'comics' ? 'title' : 'name'}&`;
-          break;
-      case "z-a":
-          url += `orderBy=-${resource === 'comics' ? 'title' : 'name'}&`;
-          break;
-      case "-focDate":
-          if (resource === 'comics') {
-              url += 'orderBy=-focDate&';
-          }
-          break;
-      case "focDate":
-          if (resource === 'comics') {
-              url += 'orderBy=focDate&';
-          }
-          break;
+    case "a-z":
+      url += `orderBy=${resource === 'comics' ? 'title' : 'name'}&`;
+      break;
+    case "z-a":
+      url += `orderBy=-${resource === 'comics' ? 'title' : 'name'}&`;
+      break;
+    case "-focDate":
+      if (resource === 'comics') {
+        url += 'orderBy=-focDate&';
+      }
+      break;
+    case "focDate":
+      if (resource === 'comics') {
+        url += 'orderBy=focDate&';
+      }
+      break;
   }
 
   url += `offset=${offsetParam}&limit=${limitParam}&${ts}${publicKey}&${hash}`;
@@ -145,30 +152,35 @@ const renderCharacter = (result) => {
 };
 
 
-//Format date
-const formatReleaseDate = (dateString) => {
-  const options = { day: "2-digit", month: "2-digit", year: "numeric" };
-  const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
-  return formattedDate;
-};
-
 //Show comic details
 const showComicDetails = async (imageUrl, title, releaseDate, writers, description) => {
+  console.log("showComicDetails called");
   hideElement(["#card--container", "#results--container"]);
   showElement(["#card--details"]);
 
   const formattedReleaseDate = formatReleaseDate(releaseDate);
 
+  console.log("Setting inner HTML");
   $("#card--details").innerHTML = `
-    <img src="${imageUrl}" alt="${title}">
-    <h2>${title}</h2>
-    <p class="date">Fecha de lanzamiento: <span>${formattedReleaseDate}</span></p>
-    <p class="writers">Guionistas: <span>${writers || "Sin datos disponibles"}</span></p>
-    <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
+  <div class="details--container">
+    <div class="details--img">
+      <img src="${imageUrl}" alt="${title}">
+    </div>  
+    <div class="details--content">
+      <h2>${title}</h2>
+      <p class="date">Fecha de lanzamiento: <span>${formattedReleaseDate}</span></p>
+      <p class="writers">Guionistas: <span>${writers || "Sin datos disponibles"}</span></p>
+      <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
+    </div>  
+  </div>
     <div id="characters-section"></div>
     <button id="btn--goBack" onclick="hideElement(['#card--details']); showElement(['#card--container'])"> Volver </button>
   `;
+
+  console.log("showComicDetails completed");
 };
+
+
 
 
 //Total results
@@ -182,12 +194,12 @@ const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitPa
 
 //Render total results
 const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
-    const pagination = await getTotalResults(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
-  
-    $("#results--cuantiti").textContent = `RESULTADOS: ${pagination.totalResults}`;
-    $("#current--page").textContent = `PÁGINA ACTUAL: ${pagination.currentPage}`;
-    $("#total--pages").textContent = `PÁGINAS TOTALES: ${pagination.totalPages}`;
-  };
+  const pagination = await getTotalResults(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
+
+  $("#results--cuantiti").textContent = `RESULTADOS: ${pagination.totalResults}`;
+  $("#current--page").textContent = `PÁGINA ACTUAL: ${pagination.currentPage}`;
+  $("#total--pages").textContent = `PÁGINAS TOTALES: ${pagination.totalPages}`;
+};
 
 //Update disabled property
 const updateDisabledProperty = () => {
@@ -248,7 +260,7 @@ const goToNextPage = async () => {
 };
 
 //Prev page
-const goToPrevPage = async () =>{
+const goToPrevPage = async () => {
   offset -= 20;
   updateDisabledProperty();
 
@@ -257,7 +269,7 @@ const goToPrevPage = async () =>{
 }
 
 //First page
-const goToFirstPage = async () =>{
+const goToFirstPage = async () => {
   offset = 0;
   updateDisabledProperty()
   const { typeSelected, searchTerm, searchSort } = getSearchParameters();
@@ -265,7 +277,7 @@ const goToFirstPage = async () =>{
 }
 
 //Last page
-const goToLastPage = async () =>{
+const goToLastPage = async () => {
   const { typeSelected, searchTerm, searchSort } = getSearchParameters();
 
   const { totalPages } = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
@@ -277,7 +289,7 @@ const goToLastPage = async () =>{
 }
 
 //Selected page
-const goToSelectedPage = async () =>{
+const goToSelectedPage = async () => {
   const { typeSelected, searchTerm, searchSort } = getSearchParameters();
 
   const selectedPage = $("#page--input").valueAsNumber;
@@ -294,18 +306,18 @@ const goToSelectedPage = async () =>{
 }
 
 //Hide options select
-const manageOptions = () =>{
-  if($("#search--type").value === "characters"){
+const manageOptions = () => {
+  if ($("#search--type").value === "characters") {
     hideElement(["#sort--title-new", "#sort--title-old"])
-  } else{
+  } else {
     showElement(["#a-z", "#z-a", "#sort--title-new", "#sort--title-old"])
   }
 }
 
 //Initialize
-const initializeApp = async () =>{
-  await renderApiResults("comics", "", "a-z",  20, 0);
-  await renderTotalResults("comics", "", "a-z",  20, 0);
+const initializeApp = async () => {
+  await renderApiResults("comics", "", "a-z", 20, 0);
+  await renderTotalResults("comics", "", "a-z", 20, 0);
   updateDisabledProperty();
   //Events
   //Btn search

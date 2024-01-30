@@ -71,15 +71,13 @@ const buildApiUrl = (resource, inputSearch, orderSearch, offsetParam, limitParam
 //Api fetch
 const fetchData = async (url) => {
   const response = await fetch(url);
-  const data = await response.json();
-  return data;
+  return response.json();
 };
 
 //API call
 const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   showElement(["#loader"]);
   const urlApi = buildApiUrl(resourceSearch, inputSearch, orderSearch, offsetParam, limitParam);
-  console.log(urlApi);
   const data = await fetchData(urlApi);
   hideElement(["#loader"]);
   return data;
@@ -88,52 +86,64 @@ const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, 
 //Render Api results
 const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   const results = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
-  $("#card--container").innerHTML = "";
+  const cardContainer = $("#card--container");
+  cardContainer.innerHTML = "";
 
-  for (const result of results.data.results) {
+  results.data.results.forEach((result) => {
     if (resourceSearch === "comics") {
-      const imageUrlComic = `${result.thumbnail.path}.${result.thumbnail.extension}`;
-      const id = result.id;
-      const title = result.title;
-      const releaseDate = result.dates.find(date => date.type === "onsaleDate").date;
-      const writers = result.creators.items.filter(creator => creator.role === "writer").map(writer => writer.name);
-      const description = result.description;
-      const characters = result.characters.items.map(character => character.name);
-
-      const comicCard = document.createElement("div");
-      comicCard.className = "comic-card";
-      comicCard.id = id;
-      comicCard.innerHTML = `
-        <img src="${imageUrlComic}">
-        <h2>${title}</h2>
-      `;
-
-      comicCard.addEventListener("click", () => {
-        showComicDetails(imageUrlComic, title, releaseDate, writers.join(", "), description, characters.join(", "));
-      });
-
-      $("#card--container").appendChild(comicCard);
+      renderComic(result);
     } else if (resourceSearch === "characters") {
-      const imageUrlCharacter = `${result.thumbnail.path}.${result.thumbnail.extension}`;
-      const id = result.id;
-      const name = result.name;
-      const description = result.description;
-      const characterCard = document.createElement("div");
-      characterCard.className = "character-card";
-      characterCard.id = id;
-      characterCard.innerHTML = `
-        <img src="${imageUrlCharacter}">
-        <h2>${name}</h2>
-      `;
-
-      characterCard.addEventListener("click", () => {
-        showCharacterDetails(imageUrlCharacter, name, description);
-      });
-
-      $("#card--container").appendChild(characterCard);
+      renderCharacter(result);
     }
-  }
+  });
 };
+
+//Render comics
+const renderComic = (result) => {
+  const imageUrlComic = `${result.thumbnail.path}.${result.thumbnail.extension}`;
+  const id = result.id;
+  const title = result.title;
+  const releaseDate = result.dates.find(date => date.type === "onsaleDate").date;
+  const writers = result.creators.items.filter(creator => creator.role === "writer").map(writer => writer.name);
+  const description = result.description;
+  const characters = result.characters.items.map(character => character.name);
+
+  const comicCard = document.createElement("div");
+  comicCard.className = "comic-card";
+  comicCard.id = id;
+  comicCard.innerHTML = `
+    <img src="${imageUrlComic}">
+    <h2>${title}</h2>
+  `;
+
+  comicCard.addEventListener("click", () => {
+    showComicDetails(imageUrlComic, title, releaseDate, writers.join(", "), description, characters.join(", "));
+  });
+
+  $("#card--container").appendChild(comicCard);
+};
+
+//Render characters
+const renderCharacter = (result) => {
+  const imageUrlCharacter = `${result.thumbnail.path}.${result.thumbnail.extension}`;
+  const id = result.id;
+  const name = result.name;
+  const description = result.description;
+  const characterCard = document.createElement("div");
+  characterCard.className = "character-card";
+  characterCard.id = id;
+  characterCard.innerHTML = `
+    <img src="${imageUrlCharacter}">
+    <h2>${name}</h2>
+  `;
+
+  characterCard.addEventListener("click", () => {
+    showCharacterDetails(imageUrlCharacter, name, description);
+  });
+
+  $("#card--container").appendChild(characterCard);
+};
+
 
 //Format date
 const formatReleaseDate = (dateString) => {
@@ -142,7 +152,7 @@ const formatReleaseDate = (dateString) => {
   return formattedDate;
 };
 
-//Show comic details function
+//Show comic details
 const showComicDetails = async (imageUrl, title, releaseDate, writers, description) => {
   hideElement(["#card--container", "#results--container"]);
   showElement(["#card--details"]);
@@ -305,7 +315,6 @@ const manageOptions = () =>{
     showElement(["#a-z", "#z-a", "#sort--title-new", "#sort--title-old"])
   }
 }
-
 
 //Initialize
 const initializeApp = async () =>{

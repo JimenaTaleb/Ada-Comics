@@ -1,12 +1,9 @@
 //Selector
 const $ = (selector) => document.querySelector(selector);
 
-//Variables globales
-
+//Global variables
 //URL base
 const baseURL = "https://gateway.marvel.com/v1/public/"
-
-let urlAPI = ""
 
 //TS
 let ts = "ts=1"
@@ -27,7 +24,7 @@ let currentPage = 1
 let totalPages = 1;
 
 
-//Ocultar elementos
+//Hide elements
 const hideElement = (selectors) => {
   for (const selector of selectors) {
     const element = $(selector);
@@ -37,7 +34,7 @@ const hideElement = (selectors) => {
   }
 };
 
-//Mostrar elementos
+//Show elements
 const showElement = (selectors) => {
   for (const selector of selectors) {
     const element = $(selector);
@@ -47,7 +44,7 @@ const showElement = (selectors) => {
   }
 };
 
-//Construcción de la url
+//URL construction
 const buildApiUrl = (resource, inputSearch, orderSearch, offsetParam, limitParam) => {
   let url = `${baseURL}${resource}?`;
 
@@ -78,14 +75,14 @@ const buildApiUrl = (resource, inputSearch, orderSearch, offsetParam, limitParam
   return url;
 };
 
-//Fetch a la Api
+//Api fetch
 const fetchData = async (url) => {
   const response = await fetch(url);
   const data = await response.json();
   return data;
 };
 
-//Llamado a la API
+//API call
 const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   const urlApi = buildApiUrl(resourceSearch, inputSearch, orderSearch, offsetParam, limitParam);
   console.log(urlApi);
@@ -94,7 +91,7 @@ const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, 
 };
 
 
-// Render Api results
+//Render Api results
 const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   const results = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
   $("#card--container").innerHTML = "";
@@ -144,14 +141,14 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
   }
 };
 
-// Format date
+//Format date
 const formatReleaseDate = (dateString) => {
   const options = { day: "2-digit", month: "2-digit", year: "numeric" };
   const formattedDate = new Date(dateString).toLocaleDateString(undefined, options);
   return formattedDate;
 };
 
-// Función para mostrar detalles de cómic
+//Show comic details function
 const showComicDetails = async (imageUrl, title, releaseDate, writers, description) => {
   hideElement(["#card--container", "#results--container"]);
   showElement(["#card--details"]);
@@ -170,7 +167,7 @@ const showComicDetails = async (imageUrl, title, releaseDate, writers, descripti
 };
 
 
-//Total de resultados  
+//Total results
 const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
   totalPages = Math.ceil(data.data.total / resultsPerPage);
@@ -179,7 +176,7 @@ const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitPa
   return { totalResults: data.data.total, totalPages, currentPage };
 };
 
-//Render resultados  
+//Render total results
 const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
     const pagination = await getTotalResults(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
   
@@ -188,9 +185,8 @@ const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limi
     $("#total--pages").textContent = `PÁGINAS TOTALES: ${pagination.totalPages}`;
   };
 
-//Update disabled
+//Update disabled property
 const updateDisabledProperty = () => {
-  // const currentPage = Math.floor(offset / resultsPerPage) + 1;
 
   if (offset > 0) {
     $("#btn--prev-page").disabled = false;

@@ -219,6 +219,7 @@ const searchFunction = async () => {
   await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
   await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
   await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+  updateDisabledProperty()
 };
 
 //Next page
@@ -267,6 +268,23 @@ const goToFirstPage = async () =>{
   await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
 }
 
+//Last page
+const goToLastPage = async () =>{
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+
+  const { totalPages } = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+
+  if (totalPages > 0) {
+    offset = (totalPages - 1) * resultsPerPage;
+    updateDisabledProperty()
+    await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+    await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+    await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+  }
+}
+
 
 
 
@@ -285,26 +303,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("#btn--prev-page").addEventListener("click", goToPrevPage)
     //Btn first page
     $("#btn--first-page").addEventListener("click", goToFirstPage)
+    //Btn last page
+    $("#btn--last-page").addEventListener("click", goToLastPage)
 })
 
-
-
-// Btn go to last page
-$("#btn--last-page").addEventListener("click", async () => {
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
-
-  const { totalPages } = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
-
-  if (totalPages > 0) {
-    offset = (totalPages - 1) * resultsPerPage;
-    updateDisabledProperty()
-    await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-    await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
-    await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
-  }
-});
 
 
 

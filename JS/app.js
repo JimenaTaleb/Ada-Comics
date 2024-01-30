@@ -307,7 +307,14 @@ const goToSelectedPage = async () =>{
   $("#page--input").value = "";
 }
 
-
+//Hide options select
+const manageOptions = () =>{
+  if($("#search--type").value === "characters"){
+    hideElement(["#sort--title-new", "#sort--title-old"])
+  } else{
+    showElement(["#a-z", "#z-a", "#sort--title-new", "#sort--title-old"])
+  }
+}
 
 
 //Initialize
@@ -329,20 +336,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("#btn--last-page").addEventListener("click", goToLastPage)
     //Input selected page
     $("#btn--gotopage").addEventListener("click", goToSelectedPage)
+    //Hide-show select options
+    $("#search--type").addEventListener("change", manageOptions)
 })
 
-
-
-
-
-//Ocultar
-$("#search--type").addEventListener("change", () =>{
-  if($("#search--type").value === "characters"){
-    hideElement(["#sort--title-new", "#sort--title-old"])
-  } else{
-    showElement(["#a-z", "#z-a", "#sort--title-new", "#sort--title-old"])
-  }
-})
 
 
 

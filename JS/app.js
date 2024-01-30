@@ -220,6 +220,26 @@ const searchFunction = async () => {
   await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
 };
 
+//Next page
+const goToNextPage = async () => {
+  $("#card--container").innerHTML = "";
+
+  if (currentPage <= 1) {
+    offset += 20;
+    updateDisabledProperty();
+  }
+
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+
+  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+};
+
+
+
 
 //Initialize
 document.addEventListener("DOMContentLoaded", async () => {
@@ -227,28 +247,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     await renderTotalResults("comics", "", "a-z",  20, 0)
     updateDisabledProperty()
 
+    //Events
+    //Btn search
     $("#btn--search").addEventListener("click", searchFunction);
+    //Btn next page
+    $("#btn--next-page").addEventListener("click", goToNextPage)
 })
 
 
-//Btn next page
-$("#btn--next-page").addEventListener("click", async () => {
 
-  $("#card--container").innerHTML = "";
-
-  if (currentPage <= 1) {
-    offset += 20
-    updateDisabledProperty()
-  } 
-
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
-  
-  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
-  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset)
-});
 
 
 // Btn prev page

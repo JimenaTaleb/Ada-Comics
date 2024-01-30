@@ -84,12 +84,13 @@ const fetchData = async (url) => {
 
 //API call
 const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
+  showElement(["#loader"]);
   const urlApi = buildApiUrl(resourceSearch, inputSearch, orderSearch, offsetParam, limitParam);
   console.log(urlApi);
   const data = await fetchData(urlApi);
+  hideElement(["#loader"]);
   return data;
 };
-
 
 //Render Api results
 const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {

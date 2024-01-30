@@ -331,19 +331,22 @@ footer {
 }
 
 #loader {
-    display: none;
+    /* display: none; */
     position: fixed;
-    left: 0;
-    top: 0;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 100vw;
     height: 100vh;
     background-color: rgba(216, 216, 216, 0.822);
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
   }
   
   #loader i {
+    line-height: 15;
     font-size: 3rem;
     color: #520000;
     animation: spin 1s infinite linear;
@@ -356,7 +359,7 @@ footer {
     to {
       transform: rotate(360deg);
     }
-  }
+  }  
 }
 
 @media (min-width: 375px) {

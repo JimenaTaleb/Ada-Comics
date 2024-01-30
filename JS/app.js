@@ -186,20 +186,6 @@ const showComicDetails = async (imageUrl, title, releaseDate, writers, descripti
   `;
 };
 
-// Función para mostrar detalles de personaje
-const showCharacterDetails = async (imageUrl, name, description) => {
-  hideElement(["#card--container", "#results--container"]);
-  showElement(["#card--details"]);
-
-  $("#card--details").innerHTML = `
-    <img src="${imageUrl}" alt="${name}">
-    <h2>${name}</h2>
-    <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
-    <div id="characters-section"></div>
-    <button id="btn--goBack" onclick="hideElement(['#card--details']); showElement(['#card--container'])"> Volver </button>
-  `;
-};
-
 
 //Total de resultados  
 const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
@@ -363,6 +349,15 @@ $("#btn--gotopage").addEventListener("click", async () => {
   }
   $("#page--input").value = "";
 });
+
+//Ocultar
+$("#search--type").addEventListener("change", () =>{
+  if($("#search--type").value === "characters"){
+    hideElement(["#sort--title-new", "#sort--title-old"])
+  } else{
+    showElement(["#a-z", "#z-a", "#sort--title-new", "#sort--title-old"])
+  }
+})
 
 
 

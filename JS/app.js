@@ -209,18 +209,30 @@ const updateDisabledProperty = () => {
   }
 };
 
-//Search
-const searchFunction = async () => {
-  offset = 0;
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
+//Search parameters
+const getSearchParameters = () => {
+  return {
+    typeSelected: $("#search--type").value,
+    searchTerm: $("#input--search").value,
+    searchSort: $("#search--sort").value,
+  };
+};
 
+//Fetch and render
+const fetchDataAndRender = async (typeSelected, searchTerm, searchSort, limit, offset) => {
   await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
   await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
   await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
-  updateDisabledProperty()
 };
+
+// Search
+const searchFunction = async () => {
+  offset = 0;
+  const { typeSelected, searchTerm, searchSort } = getSearchParameters();
+  await fetchDataAndRender(typeSelected, searchTerm, searchSort, limit, offset);
+  updateDisabledProperty();
+};
+
 
 //Next page
 const goToNextPage = async () => {
@@ -231,13 +243,8 @@ const goToNextPage = async () => {
     updateDisabledProperty();
   }
 
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
-
-  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+  const { typeSelected, searchTerm, searchSort } = getSearchParameters();
+  await fetchDataAndRender(typeSelected, searchTerm, searchSort, limit, offset);
 };
 
 //Prev page
@@ -245,61 +252,40 @@ const goToPrevPage = async () =>{
   offset -= 20;
   updateDisabledProperty();
 
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
-
-  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+  const { typeSelected, searchTerm, searchSort } = getSearchParameters();
+  await fetchDataAndRender(typeSelected, searchTerm, searchSort, limit, offset);
 }
 
 //First page
 const goToFirstPage = async () =>{
   offset = 0;
   updateDisabledProperty()
-
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
-
-  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+  const { typeSelected, searchTerm, searchSort } = getSearchParameters();
+  await fetchDataAndRender(typeSelected, searchTerm, searchSort, limit, offset);
 }
 
 //Last page
 const goToLastPage = async () =>{
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
+  const { typeSelected, searchTerm, searchSort } = getSearchParameters();
 
   const { totalPages } = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
-
   if (totalPages > 0) {
     offset = (totalPages - 1) * resultsPerPage;
     updateDisabledProperty()
-    await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-    await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
-    await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+    await fetchDataAndRender(typeSelected, searchTerm, searchSort, limit, offset);
   }
 }
 
 //Selected page
 const goToSelectedPage = async () =>{
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
+  const { typeSelected, searchTerm, searchSort } = getSearchParameters();
 
   const selectedPage = $("#page--input").valueAsNumber;
-
   const { totalPages } = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
 
   if (selectedPage > 0 && selectedPage <= totalPages) {
     offset = (selectedPage - 1) * resultsPerPage;
-    await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-    await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
-    await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+    await fetchDataAndRender(typeSelected, searchTerm, searchSort, limit, offset);
     updateDisabledProperty()
   } else {
     alert("Número de página inválido");

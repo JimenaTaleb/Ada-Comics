@@ -88,6 +88,7 @@ const fetchData = async (url) => {
 //Llamado a la API
 const getDataApi = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   const urlApi = buildApiUrl(resourceSearch, inputSearch, orderSearch, offsetParam, limitParam);
+  console.log(urlApi);
   const data = await fetchData(urlApi);
   return data;
 };
@@ -238,6 +239,20 @@ const goToNextPage = async () => {
   await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
 };
 
+//Prev page
+const goToPrevPage = async () =>{
+  offset -= 20;
+  updateDisabledProperty();
+
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+
+  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+}
+
 
 
 
@@ -252,28 +267,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("#btn--search").addEventListener("click", searchFunction);
     //Btn next page
     $("#btn--next-page").addEventListener("click", goToNextPage)
+    //Btn prev page
+    $("#btn--prev-page").addEventListener("click", goToPrevPage)
 })
 
 
 
 
 
-// Btn prev page
-$("#btn--prev-page").addEventListener("click", async () => {
-  if (currentPage > 1  && currentPage <= totalPages) {
-    offset -= 20
-    updateDisabledProperty()
-  } 
 
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
-  
-  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset)
-  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
-  
-});
 
 //Btn go to first page
 $("#btn--first-page").addEventListener("click", async () => {

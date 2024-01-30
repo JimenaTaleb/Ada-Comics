@@ -190,7 +190,7 @@ const renderTotalResults = async (resourceSearch, inputSearch, orderSearch, limi
 
 //Update disabled
 const updateDisabledProperty = () => {
-  const currentPage = Math.floor(offset / resultsPerPage) + 1;
+  // const currentPage = Math.floor(offset / resultsPerPage) + 1;
 
   if (offset > 0) {
     $("#btn--prev-page").disabled = false;
@@ -253,6 +253,20 @@ const goToPrevPage = async () =>{
   await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
 }
 
+//First page
+const goToFirstPage = async () =>{
+  offset = 0;
+  updateDisabledProperty()
+
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+
+  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+}
+
 
 
 
@@ -269,28 +283,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("#btn--next-page").addEventListener("click", goToNextPage)
     //Btn prev page
     $("#btn--prev-page").addEventListener("click", goToPrevPage)
+    //Btn first page
+    $("#btn--first-page").addEventListener("click", goToFirstPage)
 })
 
 
-
-
-
-
-
-//Btn go to first page
-$("#btn--first-page").addEventListener("click", async () => {
-  offset = 0;
-  updateDisabledProperty()
-
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
-
-  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
-
-});
 
 // Btn go to last page
 $("#btn--last-page").addEventListener("click", async () => {
@@ -327,6 +324,7 @@ $("#btn--gotopage").addEventListener("click", async () => {
     await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
     await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
     await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+    updateDisabledProperty()
   } else {
     alert("Número de página inválido");
   }

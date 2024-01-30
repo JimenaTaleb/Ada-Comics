@@ -2,16 +2,9 @@
 const $ = (selector) => document.querySelector(selector);
 
 //Global variables
-//URL base
 const baseURL = "https://gateway.marvel.com/v1/public/"
-
-//TS
 let ts = "ts=1"
-
-//Public key
 const publicKey = "&apikey=50ff4b6413283116c5c77b0bf9a1e88d"
-
-//Hash md5
 const hash = "&hash=adf5b63cea12d70814987f448a7b08e5" 
 
 let resource = "comics" || "characters";
@@ -26,22 +19,22 @@ let totalPages = 1;
 
 //Hide elements
 const hideElement = (selectors) => {
-  for (const selector of selectors) {
+  selectors.forEach((selector) => {
     const element = $(selector);
     if (element) {
       element.style.display = "none";
     }
-  }
+  });
 };
 
 //Show elements
 const showElement = (selectors) => {
-  for (const selector of selectors) {
+  selectors.forEach((selector) => {
     const element = $(selector);
     if (element) {
       element.style.display = "block";
     }
-  }
+  });
 };
 
 //URL construction

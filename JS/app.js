@@ -151,16 +151,13 @@ const renderCharacter = (result) => {
   $("#card--container").appendChild(characterCard);
 };
 
-
 //Show comic details
 const showComicDetails = async (imageUrl, title, releaseDate, writers, description) => {
-  console.log("showComicDetails called");
   hideElement(["#card--container", "#results--container"]);
   showElement(["#card--details"]);
 
   const formattedReleaseDate = formatReleaseDate(releaseDate);
 
-  console.log("Setting inner HTML");
   $("#card--details").innerHTML = `
   <div class="details--container">
     <div class="details--img">
@@ -176,12 +173,7 @@ const showComicDetails = async (imageUrl, title, releaseDate, writers, descripti
     <div id="characters-section"></div>
     <button id="btn--goBack" onclick="hideElement(['#card--details']); showElement(['#card--container'])"> Volver </button>
   `;
-
-  console.log("showComicDetails completed");
 };
-
-
-
 
 //Total results
 const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
@@ -244,7 +236,6 @@ const searchFunction = async () => {
   await fetchDataAndRender(typeSelected, searchTerm, searchSort, limit, offset);
   updateDisabledProperty();
 };
-
 
 //Next page
 const goToNextPage = async () => {

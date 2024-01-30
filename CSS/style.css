@@ -256,7 +256,8 @@
 #btn--next-page:disabled,
 #btn--last-page:disabled,
 #btn--gotopage:disabled {
-    background-color: gray;
+    background-color: rgba(128, 128, 128, 0.589);
+    cursor: none;
 }
 
 #btn--gotopage {

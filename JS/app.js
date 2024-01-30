@@ -340,7 +340,7 @@ $("#btn--gotopage").addEventListener("click", async () => {
   const { totalPages } = await getTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
 
   if (selectedPage > 0 && selectedPage <= totalPages) {
-    offset = (selectedPage - 1) * resultsPerPage;  // Corrección aquí
+    offset = (selectedPage - 1) * resultsPerPage;
     await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
     await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
     await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);

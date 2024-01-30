@@ -208,28 +208,28 @@ const updateDisabledProperty = () => {
   }
 };
 
+//Search
+const searchFunction = async () => {
+  offset = 0;
+  const typeSelected = $("#search--type").value;
+  const searchTerm = $("#input--search").value;
+  const searchSort = $("#search--sort").value;
+
+  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+};
+
 
 //Initialize
 document.addEventListener("DOMContentLoaded", async () => {
     await renderApiResults("comics", "", "a-z",  20, 0);
     await renderTotalResults("comics", "", "a-z",  20, 0)
     updateDisabledProperty()
+
+    $("#btn--search").addEventListener("click", searchFunction);
 })
 
-
-//Search
-$("#btn--search").addEventListener("click", async () => {
-  offset = 0
-  const typeSelected = $("#search--type").value;
-  const searchTerm = $("#input--search").value;
-  const searchSort = $("#search--sort").value;
-
-  await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);
-  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset)
-  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset)
-  
- 
-})
 
 //Btn next page
 $("#btn--next-page").addEventListener("click", async () => {

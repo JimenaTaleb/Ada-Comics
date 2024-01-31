@@ -151,6 +151,12 @@ const renderCharacter = (result) => {
   $("#card--container").appendChild(characterCard);
 };
 
+//Btn go back
+const goBack = () => {
+  showElement(['#card--container', '#results--container', '#pagination--container']);
+  hideElement(['#card--details']);
+};
+
 //Show details
 const showDetails = async (imageUrl, titleOrName, releaseDate, writers, description, sectionId, isComic) => {
   hideElement(["#card--container", "#results--container"]);
@@ -171,7 +177,7 @@ const showDetails = async (imageUrl, titleOrName, releaseDate, writers, descript
       </div>  
     </div>
     <div id="${sectionId}"></div>
-    <button id="btn--goBack" onclick="hideElement(['#card--details']); showElement(['#card--container'])"> Volver </button>
+    <button id="btn--goBack" onclick="goBack()">Volver</button>
   `;
 };
 

@@ -151,29 +151,41 @@ const renderCharacter = (result) => {
   $("#card--container").appendChild(characterCard);
 };
 
-//Show comic details
-const showComicDetails = async (imageUrl, title, releaseDate, writers, description) => {
+//Show details
+const showDetails = async (imageUrl, titleOrName, releaseDate, writers, description, sectionId, isComic) => {
   hideElement(["#card--container", "#results--container"]);
   showElement(["#card--details"]);
 
-  const formattedReleaseDate = formatReleaseDate(releaseDate);
+  const formattedReleaseDate = releaseDate ? formatReleaseDate(releaseDate) : '';
 
   $("#card--details").innerHTML = `
-  <div class="details--container">
-    <div class="details--img">
-      <img src="${imageUrl}" alt="${title}">
-    </div>  
-    <div class="details--content">
-      <h2>${title}</h2>
-      <p class="date">Fecha de lanzamiento: <span>${formattedReleaseDate}</span></p>
-      <p class="writers">Guionistas: <span>${writers || "Sin datos disponibles"}</span></p>
-      <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
-    </div>  
-  </div>
-    <div id="characters-section"></div>
+    <div class="details--container">
+      <div class="details--img">
+        <img src="${imageUrl}" alt="${titleOrName}">
+      </div>  
+      <div class="details--content">
+        <h2>${titleOrName}</h2>
+        ${isComic && releaseDate ? `<p class="date">Fecha de lanzamiento: <span>${formattedReleaseDate}</span></p>` : ''}
+        ${writers ? `<p class="writers">Guionistas: <span>${writers}</span></p>` : ''}
+        <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
+      </div>  
+    </div>
+    <div id="${sectionId}"></div>
     <button id="btn--goBack" onclick="hideElement(['#card--details']); showElement(['#card--container'])"> Volver </button>
   `;
 };
+
+//Show comic details
+const showComicDetails = async (imageUrl, title, releaseDate, writers, description) => {
+  showDetails(imageUrl, title, releaseDate, writers, description, "characters-section");
+};
+
+//Show character details
+const showCharacterDetails = async (imageUrlCharacter, name, description) => {
+  showDetails(imageUrlCharacter, name, null, null, description, "comics-section");
+};
+
+
 
 //Total results
 const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {

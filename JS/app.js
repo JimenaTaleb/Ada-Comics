@@ -16,7 +16,7 @@ const resultsPerPage = 20;
 let currentPage = 1
 let totalPages = 1;
 
-
+//Functions
 //Hide elements
 const hideElement = (selectors) => {
   selectors.forEach((selector) => {
@@ -184,8 +184,6 @@ const showComicDetails = async (imageUrl, title, releaseDate, writers, descripti
 const showCharacterDetails = async (imageUrlCharacter, name, description) => {
   showDetails(imageUrlCharacter, name, null, null, description, "comics-section");
 };
-
-
 
 //Total results
 const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {

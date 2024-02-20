@@ -105,7 +105,36 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
   });
 };
 
-//Render comics
+//Fetch characters
+const fetchCharacters = async (collectionURI, comicDetails) => {
+  const charactersResponse = await fetch(`${collectionURI}?${ts}${publicKey}${hash}`);
+  const charactersData = await charactersResponse.json();
+
+  const numCharacters = charactersData.data.results.length;
+
+  $("#characters-section").innerHTML = "<h2>Personajes</h2>"
+
+  if (charactersData.data && charactersData.data.results.length > 0) {
+ 
+    $("#characters-section").innerHTML += `RESULTADOS: ${numCharacters}`;
+    
+    const characters = charactersData.data.results.map(character => ({
+      imageUrlCharacter: `${character.thumbnail.path}.${character.thumbnail.extension}`,
+      characterName: character.name,
+      description: character.description,
+    }));
+
+    characters.forEach(character => {
+      renderCharacter(character);
+    });
+    
+  } else {
+    $("#characters-section").innerHTML += `RESULTADOS: ${numCharacters}`;
+    $("#characters-section").innerHTML += "<p>No se han encontrado resultados</p>"
+  }
+};
+
+// Render comics
 const renderComic = (result) => {
   const imageUrlComic = `${result.thumbnail.path}.${result.thumbnail.extension}`;
   const id = result.id;
@@ -123,22 +152,34 @@ const renderComic = (result) => {
     <h2>${title}</h2>
   `;
 
-  comicCard.addEventListener("click", () => {
-    showComicDetails(imageUrlComic, title, releaseDate, writers.join(", "), description, characters.join(", "));
+  comicCard.addEventListener("click", async () => {
+
+    if (imageUrlComic) {
+      showComicDetails(imageUrlComic, title, releaseDate, writers.join(", "), description, characters.join(", "));
+
+      if (result.characters && result.characters.collectionURI) {
+        await fetchCharacters(result.characters.collectionURI, {
+          imageUrlComic,
+          title,
+          releaseDate,
+          writers: writers.join(", "),
+          description,
+          characters: characters.join(", ")
+        });
+      }
+    }
   });
 
   $("#card--container").appendChild(comicCard);
 };
 
 //Render characters
-const renderCharacter = (result) => {
-  const imageUrlCharacter = `${result.thumbnail.path}.${result.thumbnail.extension}`;
-  const id = result.id;
-  const name = result.name;
-  const description = result.description;
+const renderCharacter = (character) => {
+  const imageUrlCharacter = character.imageUrlCharacter;
+  const name = character.characterName;
+  const description = character.description;
   const characterCard = document.createElement("div");
   characterCard.className = "character-card";
-  characterCard.id = id;
   characterCard.innerHTML = `
     <img src="${imageUrlCharacter}">
     <h2>${name}</h2>
@@ -148,8 +189,9 @@ const renderCharacter = (result) => {
     showCharacterDetails(imageUrlCharacter, name, description);
   });
 
-  $("#card--container").appendChild(characterCard);
+  $("#characters-section").appendChild(characterCard);
 };
+
 
 //Btn go back
 const goBack = () => {
@@ -181,18 +223,18 @@ const showDetails = async (imageUrl, titleOrName, releaseDate, writers, descript
   `;
 };
 
-//Show comic details
+// Show comic details
 const showComicDetails = async (imageUrl, title, releaseDate, writers, description) => {
   showDetails(imageUrl, title, releaseDate, writers, description, "characters-section");
 };
 
-//Show character details
+// Show character details
 const showCharacterDetails = async (imageUrlCharacter, name, description) => {
   showDetails(imageUrlCharacter, name, null, null, description, "comics-section");
 };
 
 //Total results
-const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
+const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam, pagination) => {
   const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
   totalPages = Math.ceil(data.data.total / resultsPerPage);
   const currentPage = Math.floor(offsetParam / resultsPerPage) + 1;

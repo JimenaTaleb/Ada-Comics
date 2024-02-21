@@ -63,18 +63,24 @@
 
     <!-- Cards -->
     <section>
+      <div id="card--details" class="hidden"></div>
       <div id="card--container"></div>
-      <div id="card--details" class="hidden">
-        <div id="characters-section"></div>
-      </div>
+
     </section>
     <!-- Pagination -->
     <section id="pagination--container">
+      <button id="btn--goBack" onclick="goBack()" class="hidden">Volver</button>
       <div id="btn--panel">
         <button id="btn--first-page"><i class="fa-solid fa-backward-fast"></i></button>
         <button id="btn--prev-page"><i class="fa-solid fa-backward"></i></button>
         <button id="btn--next-page"><i class="fa-solid fa-forward"></i></button>
         <button id="btn--last-page"><i class="fa-solid fa-forward-fast"></i></button>
+      </div>
+      <div id="btn--panel-details" class="hidden">
+        <button id="btn--first-page-details"><i class="fa-solid fa-backward-fast"></i></button>
+        <button id="btn--prev-page-details"><i class="fa-solid fa-backward"></i></button>
+        <button id="btn--next-page-details"><i class="fa-solid fa-forward"></i></button>
+        <button id="btn--last-page-details"><i class="fa-solid fa-forward-fast"></i></button>
       </div>
       <div id="page--navigation">
         <p id="current--page">PÁGINA ACTUAL</p>

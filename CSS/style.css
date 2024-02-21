@@ -412,6 +412,12 @@
     width: 150px;
     height: 200px;
   }
+
+  #characters-section{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
 }
 
 @media (min-width: 768px) {

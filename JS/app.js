@@ -182,6 +182,42 @@ const showComicDetails = async (imageUrl, title, releaseDate, writers, descripti
   updateDetailDisabledProperty();
 };
 
+//Show character details
+const showCharacterDetails = async (imageUrlCharacter, name, description, comicsUrl, offsetParam, limitParam) => {
+  showDetails(imageUrlCharacter, name, null, null, description);
+  showElement(["#loader"]);
+
+  let fullComicsUrl = `${comicsUrl}?offset=${offsetParam}&limit=${limitParam}&${ts}${publicKey}${hash}`;
+  console.log(fullComicsUrl);
+  const comicsData = await fetchData(fullComicsUrl);
+  hideElement(["#loader"])
+
+
+  $("#card--container").innerHTML = `
+  <div id="cards--section">
+  <h3>Comics</h3>
+  <p class="details--results">RESULTADOS: ${comicsData.data.total}</p>
+  </div>
+  `;
+
+  if (comicsData.data.results.length === 0) {
+    $("#card--container").innerHTML += `
+  <div id="cards--section">
+  <p>No se han encontrado resultados</p>
+  </div>
+  `;
+  } else {
+    comicsData.data.results.forEach((comic) => {
+      renderComic(comic);
+    });
+  }
+
+  detailOffset = offsetParam;
+  detailTotalPages = Math.ceil(comicsData.data.total / resultsPerPage);
+  detailCurrentPage = Math.floor(detailOffset / resultsPerPage) + 1;
+
+  updateDetailDisabledProperty();
+};
 
 
 

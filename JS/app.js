@@ -370,6 +370,7 @@ const searchFunction = async () => {
   const { typeSelected, searchTerm, searchSort } = getSearchParameters();
   await fetchDataAndRender(typeSelected, searchTerm, searchSort, limit, offset);
   updateDisabledProperty();
+  updateURL();
 };
 
 //Next page

@@ -143,6 +143,7 @@ const showDetails = async (imageUrl, titleOrName, releaseDate, writers, descript
     }
   }
   showElement(["#btn--goBack"])
+  console.log("me ejecute showdetails");
 };
 
 //Show comic details
@@ -180,6 +181,8 @@ const showComicDetails = async (imageUrl, title, releaseDate, writers, descripti
   detailCurrentPage = Math.floor(detailOffset / resultsPerPage) + 1;
 
   updateDetailDisabledProperty();
+
+  console.log("me ejecute comicdetails");
 };
 
 //Show character details
@@ -217,6 +220,7 @@ const showCharacterDetails = async (imageUrlCharacter, name, description, comics
   detailCurrentPage = Math.floor(detailOffset / resultsPerPage) + 1;
 
   updateDetailDisabledProperty();
+  console.log("me ejecute characterdetails");
 };
 
 //Render character
@@ -436,11 +440,12 @@ const manageOptions = () => {
   }
 }
 
+//Next page details
 const goToDetailNextPage = async () => {
-  detailOffset += resultsPerPage;
+  detailOffset += 20
   updateDetailDisabledProperty();
   console.log(detailOffset);
-  showDetails()
+  showCharacterDetails()
 };
 
 //Initialize
@@ -453,6 +458,8 @@ const initializeApp = async () => {
   $("#btn--search").addEventListener("click", searchFunction);
   //Btn next page
   $("#btn--next-page").addEventListener("click", goToNextPage)
+  //Btn next page details
+  $("#btn--next-page-details").addEventListener("click", goToDetailNextPage)
   //Btn prev page
   $("#btn--prev-page").addEventListener("click", goToPrevPage)
   //Btn first page

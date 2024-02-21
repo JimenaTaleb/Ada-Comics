@@ -219,7 +219,7 @@ const showCharacterDetails = async (imageUrlCharacter, name, description, comics
   updateDetailDisabledProperty();
 };
 
-/Render character
+//Render character
 const renderCharacter = (character) => {
   const imageUrlCharacter = character.thumbnail.path + "." + character.thumbnail.extension;
   const name = character.name;
@@ -270,9 +270,18 @@ const renderComic = (result) => {
 
 
 //Btn go back
-const goBack = () => {
+const goBack = async () => {
   showElement(['#card--container', '#results--container', '#pagination--container']);
   hideElement(['#card--details']);
+
+  const { typeSelected, searchTerm, searchSort } = getSearchParameters();
+  await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
+  await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
+  updateDisabledProperty();
+
+  detailOffset = 0;
+  detailCurrentPage = 1;
+  detailTotalPages = 1;
 };
 
 //Total results

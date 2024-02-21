@@ -105,104 +105,10 @@ const renderApiResults = async (resourceSearch, inputSearch, orderSearch, limitP
   });
 };
 
-//Fetch characters
-const fetchCharacters = async (collectionURI, comicDetails) => {
-  const charactersResponse = await fetch(`${collectionURI}?${ts}${publicKey}${hash}`);
-  const charactersData = await charactersResponse.json();
-
-  const numCharacters = charactersData.data.results.length;
-
-  $("#characters-section").innerHTML = "<h2>Personajes</h2>"
-
-  if (charactersData.data && charactersData.data.results.length > 0) {
- 
-    $("#characters-section").innerHTML += `RESULTADOS: ${numCharacters}`;
-    
-    const characters = charactersData.data.results.map(character => ({
-      imageUrlCharacter: `${character.thumbnail.path}.${character.thumbnail.extension}`,
-      characterName: character.name,
-      description: character.description,
-    }));
-
-    characters.forEach(character => {
-      renderCharacter(character);
-    });
-    
-  } else {
-    $("#characters-section").innerHTML += `RESULTADOS: ${numCharacters}`;
-    $("#characters-section").innerHTML += "<p>No se han encontrado resultados</p>"
-  }
-};
-
-// Render comics
-const renderComic = (result) => {
-  const imageUrlComic = `${result.thumbnail.path}.${result.thumbnail.extension}`;
-  const id = result.id;
-  const title = result.title;
-  const releaseDate = result.dates.find(date => date.type === "onsaleDate").date;
-  const writers = result.creators.items.filter(creator => creator.role === "writer").map(writer => writer.name);
-  const description = result.description;
-  const characters = result.characters.items.map(character => character.name);
-
-  const comicCard = document.createElement("div");
-  comicCard.className = "comic-card";
-  comicCard.id = id;
-  comicCard.innerHTML = `
-    <img src="${imageUrlComic}">
-    <h2>${title}</h2>
-  `;
-
-  comicCard.addEventListener("click", async () => {
-
-    if (imageUrlComic) {
-      showComicDetails(imageUrlComic, title, releaseDate, writers.join(", "), description, characters.join(", "));
-
-      if (result.characters && result.characters.collectionURI) {
-        await fetchCharacters(result.characters.collectionURI, {
-          imageUrlComic,
-          title,
-          releaseDate,
-          writers: writers.join(", "),
-          description,
-          characters: characters.join(", ")
-        });
-      }
-    }
-  });
-
-  $("#card--container").appendChild(comicCard);
-};
-
-//Render characters
-const renderCharacter = (character) => {
-  const imageUrlCharacter = character.imageUrlCharacter;
-  const name = character.characterName;
-  const description = character.description;
-  const characterCard = document.createElement("div");
-  characterCard.className = "character-card";
-  characterCard.innerHTML = `
-    <img src="${imageUrlCharacter}">
-    <h2>${name}</h2>
-  `;
-
-  characterCard.addEventListener("click", () => {
-    showCharacterDetails(imageUrlCharacter, name, description);
-  });
-
-  $("#characters-section").appendChild(characterCard);
-};
-
-
-//Btn go back
-const goBack = () => {
-  showElement(['#card--container', '#results--container', '#pagination--container']);
-  hideElement(['#card--details']);
-};
-
 //Show details
-const showDetails = async (imageUrl, titleOrName, releaseDate, writers, description, sectionId, isComic) => {
-  hideElement(["#card--container", "#results--container"]);
-  showElement(["#card--details"]);
+const showDetails = async (imageUrl, titleOrName, releaseDate, writers, description, isComic, relatedDataUrl) => {
+  hideElement(["#results--container", "#btn--panel"]);
+  showElement(["#card--details", "#btn--panel-details"]);
 
   const formattedReleaseDate = releaseDate ? formatReleaseDate(releaseDate) : '';
 
@@ -218,19 +124,37 @@ const showDetails = async (imageUrl, titleOrName, releaseDate, writers, descript
         <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
       </div>  
     </div>
-    <div id="${sectionId}"></div>
-    <button id="btn--goBack" onclick="goBack()">Volver</button>
   `;
+
+  if (isComic && relatedDataUrl) {
+    const relatedData = await fetchData(relatedDataUrl);
+    const charactersContainer = $("#card--container");
+    
+    if (charactersContainer) {
+      charactersContainer.innerHTML = `<h3>${isComic ? 'Characters' : 'Comics'} in this ${isComic ? 'Comic' : 'Character'}:</h3>`;
+      
+      relatedData.data.results.forEach((relatedItem) => {
+        if (isComic) {
+          renderCharacter(relatedItem);
+        } else {
+          renderComic(relatedItem);
+        }
+      });
+    }
+  }
+  showElement(["#btn--goBack"])
 };
 
-// Show comic details
-const showComicDetails = async (imageUrl, title, releaseDate, writers, description) => {
-  showDetails(imageUrl, title, releaseDate, writers, description, "characters-section");
-};
 
-// Show character details
-const showCharacterDetails = async (imageUrlCharacter, name, description) => {
-  showDetails(imageUrlCharacter, name, null, null, description, "comics-section");
+
+
+
+
+
+//Btn go back
+const goBack = () => {
+  showElement(['#card--container', '#results--container', '#pagination--container']);
+  hideElement(['#card--details']);
 };
 
 //Total results

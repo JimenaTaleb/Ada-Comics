@@ -264,11 +264,6 @@ const renderComic = (result) => {
   $("#card--container").appendChild(comicCard);
 };
 
-
-
-
-
-
 //Btn go back
 const goBack = async () => {
   showElement(['#card--container', '#results--container', '#pagination--container']);
@@ -440,6 +435,13 @@ const manageOptions = () => {
     showElement(["#a-z", "#z-a", "#sort--title-new", "#sort--title-old"])
   }
 }
+
+const goToDetailNextPage = async () => {
+  detailOffset += resultsPerPage;
+  updateDetailDisabledProperty();
+  console.log(detailOffset);
+  showDetails()
+};
 
 //Initialize
 const initializeApp = async () => {

@@ -285,7 +285,7 @@ const goBack = async () => {
 };
 
 //Total results
-const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam, pagination) => {
+const getTotalResults = async (resourceSearch, inputSearch, orderSearch, limitParam, offsetParam) => {
   const data = await getDataApi(resourceSearch, inputSearch, orderSearch, limitParam, offsetParam);
   totalPages = Math.ceil(data.data.total / resultsPerPage);
   const currentPage = Math.floor(offsetParam / resultsPerPage) + 1;
@@ -319,6 +319,25 @@ const updateDisabledProperty = () => {
   } else {
     $("#btn--next-page").disabled = true;
     $("#btn--last-page").disabled = true;
+  }
+};
+
+//Update disabled property details
+const updateDetailDisabledProperty = () => {
+  if (offset > 0) {
+    $("#btn--prev-page-details").disabled = false;
+    $("#btn--first-page-details").disabled = false;
+  } else {
+    $("#btn--prev-page-details").disabled = true;
+    $("#btn--first-page-details").disabled = true;
+  }
+
+  if (offset < (totalPages - 1) * resultsPerPage) {
+    $("#btn--next-page-details").disabled = false;
+    $("#btn--last-page-details").disabled = false;
+  } else {
+    $("#btn--next-page-details").disabled = true;
+    $("#btn--last-page-details").disabled = true;
   }
 };
 

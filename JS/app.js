@@ -350,6 +350,13 @@ const getSearchParameters = () => {
   };
 };
 
+// Update URL with search parameters
+const updateURL = () => {
+  const { typeSelected, searchTerm, searchSort } = getSearchParameters();
+  const searchParams = new URLSearchParams({ typeSelected, searchTerm, searchSort });
+  history.pushState({}, '', `${location.pathname}?${searchParams}`);
+};
+
 //Fetch and render
 const fetchDataAndRender = async (typeSelected, searchTerm, searchSort, limit, offset) => {
   await getDataApi(typeSelected, searchTerm, searchSort, limit, offset);

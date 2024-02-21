@@ -219,6 +219,51 @@ const showCharacterDetails = async (imageUrlCharacter, name, description, comics
   updateDetailDisabledProperty();
 };
 
+/Render character
+const renderCharacter = (character) => {
+  const imageUrlCharacter = character.thumbnail.path + "." + character.thumbnail.extension;
+  const name = character.name;
+  const description = character.description;
+  const comicsUrl = character.comics.collectionURI;
+
+  const characterCard = document.createElement("div");
+  characterCard.className = "character-card";
+  characterCard.innerHTML = `
+    <img src="${imageUrlCharacter}">
+    <h2>${name}</h2>
+  `;
+
+  characterCard.addEventListener("click", async () => {
+    showCharacterDetails(imageUrlCharacter, name, description, comicsUrl, offset, resultsPerPage);
+  });
+
+  $("#card--container").appendChild(characterCard);
+};
+
+// Render comics
+const renderComic = (result) => {
+  const imageUrlComic = `${result.thumbnail.path}.${result.thumbnail.extension}`;
+  const id = result.id;
+  const title = result.title;
+  const releaseDate = result.dates.find(date => date.type === "onsaleDate").date;
+  const writers = result.creators.items.filter(creator => creator.role === "writer").map(writer => writer.name);
+  const description = result.description;
+  const charactersUrl = result.characters.collectionURI;
+  
+  const comicCard = document.createElement("div");
+  comicCard.className = "comic-card";
+  comicCard.id = id;
+  comicCard.innerHTML = `
+  <img src="${imageUrlComic}">
+  <h2>${title}</h2>
+  `;
+  comicCard.addEventListener("click", async () => {
+    showComicDetails(imageUrlComic, title, releaseDate, writers.join(", "), description, charactersUrl, offset, resultsPerPage);
+  });
+
+  $("#card--container").appendChild(comicCard);
+};
+
 
 
 

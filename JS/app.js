@@ -15,6 +15,7 @@ let offset = 0;
 const resultsPerPage = 20;
 let currentPage = 1
 let totalPages = 1;
+let detailCharacter;
 
 //Functions
 //Hide elements
@@ -143,7 +144,6 @@ const showDetails = async (imageUrl, titleOrName, releaseDate, writers, descript
     }
   }
   showElement(["#btn--goBack"])
-  console.log("me ejecute showdetails");
 };
 
 //Show comic details
@@ -151,11 +151,8 @@ const showComicDetails = async (imageUrl, title, releaseDate, writers, descripti
   showDetails(imageUrl, title, releaseDate, writers, description);
   showElement(["#loader"]);
   const fullCharactersUrl = `${charactersUrl}?offset=${offsetParam}&limit=${limitParam}&${ts}${publicKey}${hash}`;
-  
-  console.log(fullCharactersUrl);
   const charactersData = await fetchData(fullCharactersUrl);
   hideElement(["#loader"])
-
 
   $("#card--container").innerHTML = `
   <div id="cards--section">
@@ -181,20 +178,30 @@ const showComicDetails = async (imageUrl, title, releaseDate, writers, descripti
   detailCurrentPage = Math.floor(detailOffset / resultsPerPage) + 1;
 
   updateDetailDisabledProperty();
-
-  console.log("me ejecute comicdetails");
 };
 
 //Show character details
-const showCharacterDetails = async (imageUrlCharacter, name, description, comicsUrl, offsetParam, limitParam) => {
+const showCharacterDetails = async (
+  imageUrlCharacter,
+  name,
+  description,
+  comicsUrl,
+  offsetParam,
+  limitParam
+) => {
+  detailCharacter = {
+    imageUrlCharacter,
+    name,
+    description,
+    comicsUrl,
+    offsetParam,
+    limitParam,
+  };
   showDetails(imageUrlCharacter, name, null, null, description);
   showElement(["#loader"]);
-
   let fullComicsUrl = `${comicsUrl}?offset=${offsetParam}&limit=${limitParam}&${ts}${publicKey}${hash}`;
-  console.log(fullComicsUrl);
   const comicsData = await fetchData(fullComicsUrl);
-  hideElement(["#loader"])
-
+  hideElement(["#loader"]);
 
   $("#card--container").innerHTML = `
   <div id="cards--section">
@@ -220,8 +227,8 @@ const showCharacterDetails = async (imageUrlCharacter, name, description, comics
   detailCurrentPage = Math.floor(detailOffset / resultsPerPage) + 1;
 
   updateDetailDisabledProperty();
-  console.log("me ejecute characterdetails");
 };
+
 
 //Render character
 const renderCharacter = (character) => {
@@ -246,13 +253,14 @@ const renderCharacter = (character) => {
 
 // Render comics
 const renderComic = (result) => {
+  let detailComic = result
   const imageUrlComic = `${result.thumbnail.path}.${result.thumbnail.extension}`;
   const id = result.id;
   const title = result.title;
   const releaseDate = result.dates.find(date => date.type === "onsaleDate").date;
   const writers = result.creators.items.filter(creator => creator.role === "writer").map(writer => writer.name);
   const description = result.description;
-  const charactersUrl = result.characters.collectionURI;
+  let charactersUrl = result.characters.collectionURI;
   
   const comicCard = document.createElement("div");
   comicCard.className = "comic-card";
@@ -323,22 +331,14 @@ const updateDisabledProperty = () => {
 
 //Update disabled property details
 const updateDetailDisabledProperty = () => {
-  if (offset > 0) {
-    $("#btn--prev-page-details").disabled = false;
-    $("#btn--first-page-details").disabled = false;
-  } else {
-    $("#btn--prev-page-details").disabled = true;
-    $("#btn--first-page-details").disabled = true;
-  }
-
-  if (offset < (totalPages - 1) * resultsPerPage) {
-    $("#btn--next-page-details").disabled = false;
-    $("#btn--last-page-details").disabled = false;
-  } else {
-    $("#btn--next-page-details").disabled = true;
-    $("#btn--last-page-details").disabled = true;
-  }
+  const totalPages = Math.ceil(detailTotalPages);
+  const currentPage = Math.floor(detailOffset / resultsPerPage) + 1;
+  $("#btn--prev-page-details").disabled = detailOffset <= 0;
+  $("#btn--first-page-details").disabled = detailOffset <= 0;
+  $("#btn--next-page-details").disabled = currentPage >= totalPages;
+  $("#btn--last-page-details").disabled = currentPage >= totalPages;
 };
+
 
 //Search parameters
 const getSearchParameters = () => {
@@ -442,10 +442,67 @@ const manageOptions = () => {
 
 //Next page details
 const goToDetailNextPage = async () => {
-  detailOffset += 20
+  detailOffset += 20;
   updateDetailDisabledProperty();
-  console.log(detailOffset);
-  showCharacterDetails()
+  showCharacterDetails(
+    detailCharacter.imageUrlCharacter,
+    detailCharacter.name,
+    detailCharacter.description,
+    detailCharacter.comicsUrl,
+    detailOffset,
+    resultsPerPage
+  );
+};
+
+//Prev page details
+const goToDetailPrevPage = async () => {
+  detailOffset -= resultsPerPage;
+  if (detailOffset < 0) {
+    detailOffset = 0;
+  }
+  updateDetailDisabledProperty();
+  showCharacterDetails(
+    detailCharacter.imageUrlCharacter,
+    detailCharacter.name,
+    detailCharacter.description,
+    detailCharacter.comicsUrl,
+    detailOffset,
+    resultsPerPage
+  );
+};
+
+//First page details
+const goToFirstPageDetails = async () => {
+  if (detailOffset !== 0) {
+    detailOffset = 0;
+    updateDetailDisabledProperty();
+    showCharacterDetails(
+      detailCharacter.imageUrlCharacter,
+      detailCharacter.name,
+      detailCharacter.description,
+      detailCharacter.comicsUrl,
+      detailOffset,
+      resultsPerPage
+    );
+  }
+};
+
+//Last page details
+const goToLastPageDetails = async () => {
+  const totalPages = Math.ceil(detailTotalPages);
+  const lastPageOffset = (totalPages - 1) * resultsPerPage;
+  if (lastPageOffset !== detailOffset) {
+    detailOffset = lastPageOffset;
+    updateDetailDisabledProperty();
+    showCharacterDetails(
+      detailCharacter.imageUrlCharacter,
+      detailCharacter.name,
+      detailCharacter.description,
+      detailCharacter.comicsUrl,
+      detailOffset,
+      resultsPerPage
+    );
+  }
 };
 
 //Initialize
@@ -462,10 +519,16 @@ const initializeApp = async () => {
   $("#btn--next-page-details").addEventListener("click", goToDetailNextPage)
   //Btn prev page
   $("#btn--prev-page").addEventListener("click", goToPrevPage)
+  //Btn prev page details
+  $("#btn--prev-page-details").addEventListener("click", goToDetailPrevPage);
   //Btn first page
   $("#btn--first-page").addEventListener("click", goToFirstPage)
+  //Btn first page details
+  $("#btn--first-page-details").addEventListener("click", goToFirstPageDetails);
   //Btn last page
   $("#btn--last-page").addEventListener("click", goToLastPage)
+  //Btn las page details
+  $("#btn--last-page-details").addEventListener("click", goToLastPageDetails);
   //Input selected page
   $("#btn--gotopage").addEventListener("click", goToSelectedPage)
   //Hide-show select options

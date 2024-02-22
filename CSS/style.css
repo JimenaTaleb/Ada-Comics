@@ -275,7 +275,11 @@
   #btn--prev-page:disabled,
   #btn--next-page:disabled,
   #btn--last-page:disabled,
-  #btn--gotopage:disabled {
+  #btn--gotopage:disabled,
+  #btn--first-page-details:disabled,
+  #btn--prev-page-details:disabled,
+  #btn--next-page-details:disabled,
+  #btn--last-page-details:disabled {
     background-color: #757575;
     cursor: none;
   }

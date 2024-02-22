@@ -50,24 +50,24 @@ const buildApiUrl = (resource, inputSearch, orderSearch, offsetParam, limitParam
   let url = `${baseURL}${resource}?`;
 
   if (inputSearch) {
-    url += `${resource === 'comics' ? 'titleStartsWith' : 'nameStartsWith'}=${inputSearch}&`;
+    url += `${resource === "comics" ? "titleStartsWith" : "nameStartsWith"}=${inputSearch}&`;
   }
 
   switch (orderSearch.toLowerCase()) {
     case "a-z":
-      url += `orderBy=${resource === 'comics' ? 'title' : 'name'}&`;
+      url += `orderBy=${resource === "comics" ? "title" : "name"}&`;
       break;
     case "z-a":
-      url += `orderBy=-${resource === 'comics' ? 'title' : 'name'}&`;
+      url += `orderBy=-${resource === "comics" ? "title" : "name"}&`;
       break;
     case "-focDate":
-      if (resource === 'comics') {
-        url += 'orderBy=-focDate&';
+      if (resource === "comics") {
+        url += "orderBy=-focDate&";
       }
       break;
     case "focDate":
-      if (resource === 'comics') {
-        url += 'orderBy=focDate&';
+      if (resource === "comics") {
+        url += "orderBy=focDate&";
       }
       break;
   }
@@ -111,7 +111,7 @@ const showDetails = async (imageUrl, titleOrName, releaseDate, writers, descript
   hideElement(["#results--container", "#btn--panel"]);
   showElement(["#card--details", "#btn--panel-details"]);
 
-  const formattedReleaseDate = releaseDate ? formatReleaseDate(releaseDate) : '';
+  const formattedReleaseDate = releaseDate ? formatReleaseDate(releaseDate) : "";
 
   $("#card--details").innerHTML = `
     <div class="details--container">
@@ -120,8 +120,8 @@ const showDetails = async (imageUrl, titleOrName, releaseDate, writers, descript
       </div>  
       <div class="details--content">
         <h2>${titleOrName}</h2>
-        ${isComic && releaseDate ? `<p class="date">Fecha de lanzamiento: <span>${formattedReleaseDate}</span></p>` : ''}
-        ${writers ? `<p class="writers">Guionistas: <span>${writers}</span></p>` : ''}
+        ${isComic && releaseDate ? `<p class="date">Fecha de lanzamiento: <span>${formattedReleaseDate}</span></p>` : ""}
+        ${writers ? `<p class="writers">Guionistas: <span>${writers}</span></p>` : ""}
         <p class="description">Descripción: <span>${description || "Sin descripción disponible"}</span></p>
       </div>  
     </div>
@@ -132,7 +132,7 @@ const showDetails = async (imageUrl, titleOrName, releaseDate, writers, descript
     const charactersContainer = $("#card--container");
     
     if (charactersContainer) {
-      charactersContainer.innerHTML = `<h3>${isComic ? 'Characters' : 'Comics'} in this ${isComic ? 'Comic' : 'Character'}:</h3>`;
+      charactersContainer.innerHTML = `<h3>${isComic ? "Characters" : "Comics"} in this ${isComic ? "Comic" : "Character"}:</h3>`;
       
       relatedData.data.results.forEach((relatedItem) => {
         if (isComic) {
@@ -278,17 +278,20 @@ const renderComic = (result) => {
 
 //Btn go back
 const goBack = async () => {
-  showElement(['#card--container', '#results--container', '#pagination--container']);
-  hideElement(['#card--details']);
+  showElement(["#card--container", "#results--container", "#pagination--container", "#btn--panel"]);
+  hideElement(["#card--details", "#btn--panel-details"]);
 
   const { typeSelected, searchTerm, searchSort } = getSearchParameters();
   await renderApiResults(typeSelected, searchTerm, searchSort, limit, offset);
   await renderTotalResults(typeSelected, searchTerm, searchSort, limit, offset);
-  updateDisabledProperty();
+  
 
   detailOffset = 0;
   detailCurrentPage = 1;
   detailTotalPages = 1;
+
+  updateDetailDisabledProperty()
+  updateDisabledProperty();
 };
 
 //Total results
@@ -353,7 +356,7 @@ const getSearchParameters = () => {
 const updateURL = () => {
   const { typeSelected, searchTerm, searchSort } = getSearchParameters();
   const searchParams = new URLSearchParams({ typeSelected, searchTerm, searchSort });
-  history.pushState({}, '', `${location.pathname}?${searchParams}`);
+  history.pushState({}, "", `${location.pathname}?${searchParams}`);
 };
 
 //Fetch and render

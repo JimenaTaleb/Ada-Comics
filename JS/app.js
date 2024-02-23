@@ -2,7 +2,7 @@
 const $ = (selector) => document.querySelector(selector);
 
 //Global variables
-const baseURL = "https://gateway.marvel.com/v1/public/"
+const baseURL = "http://gateway.marvel.com/v1/public/"
 let ts = "ts=1"
 const publicKey = "&apikey=50ff4b6413283116c5c77b0bf9a1e88d"
 const hash = "&hash=adf5b63cea12d70814987f448a7b08e5"
